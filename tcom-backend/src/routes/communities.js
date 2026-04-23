@@ -126,11 +126,19 @@ router.get('/:slug/members', async (req, res) => {
   if (!community) return res.status(404).json({ error: 'Community not found' });
   const { data, error } = await supabase
     .from('community_members')
-    .select('role, joined_at, users!community_members_user_id_fkey(username,display_name,avatar_url)')
+    .select('id, user_id, role, joined_at, users!community_members_user_id_fkey(username,display_name,avatar_url)')
     .eq('community_id', community.id)
     .order('joined_at', { ascending: true });
   if (error) return res.status(400).json({ error: error.message });
-  return res.json(data);
+  const roleRank = { owner: 0, moderator: 1, member: 2 };
+  const normalized = (data || [])
+    .filter((row) => row.user_id)
+    .sort((a, b) => {
+      const roleDiff = (roleRank[a.role] ?? 99) - (roleRank[b.role] ?? 99);
+      if (roleDiff !== 0) return roleDiff;
+      return new Date(a.joined_at).getTime() - new Date(b.joined_at).getTime();
+    });
+  return res.json(normalized);
 });
 
 router.put('/:slug/moderators', authenticate, requireOwner, async (req, res) => {

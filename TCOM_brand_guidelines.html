@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TCOM — Brand Guidelines</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    /* ── PRIMARY PALETTE (extracted from logo) */
+    --black:      #0F0E0C;   /* logo background — warm black, not pure */
+    --black-2:    #1A1916;   /* surface / card background */
+    --black-3:    #242220;   /* elevated surface */
+    --black-4:    #2E2B28;   /* borders, dividers */
+
+    --gold:       #C9A96E;   /* logo icon — primary brand gold */
+    --gold-light: #DFC28F;   /* hover / highlight */
+    --gold-pale:  #F0DDB8;   /* text on dark for headings */
+    --gold-muted: #8C7248;   /* muted gold, secondary text */
+    --gold-deep:  #7A5E30;   /* deep gold, shadows */
+
+    /* ── UTILITY */
+    --white:      #F5F0E8;   /* warm white (never pure #fff) */
+    --gray-1:     #C4B99A;   /* body text */
+    --gray-2:     #8A7E68;   /* secondary text */
+    --gray-3:     #4A4438;   /* disabled / placeholder */
+
+    /* ── SEMANTIC */
+    --success:    #4E8C5A;
+    --warning:    #C9A96E;   /* same as gold */
+    --error:      #8C3A3A;
+    --info:       #3A5A7A;
+
+    --radius-sm:  6px;
+    --radius-md:  12px;
+    --radius-lg:  20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--gray-1);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER */
+  .header {
+    padding: 64px 80px 56px;
+    border-bottom: 1px solid var(--black-4);
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    background: linear-gradient(135deg, #0F0E0C 0%, #1a1712 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .logo-img {
+    width: 100px; height: 100px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 0 40px rgba(201,169,110,0.2);
+  }
+  .header-text h1 {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    color: var(--gold-pale);
+    line-height: 1;
+  }
+  .header-text h1 span { color: var(--gold); }
+  .header-text p {
+    margin-top: 10px;
+    color: var(--gray-2);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+  .header-text .doc-type {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 4px 14px;
+    border: 1px solid var(--gold-deep);
+    border-radius: 20px;
+    color: var(--gold-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
+  .section { margin-bottom: 72px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold-muted);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    margin-bottom: 32px;
+  }
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--black-4);
+    margin: 0 0 32px;
+  }
+
+  /* ── COLOR SWATCHES */
+  .palette-group { margin-bottom: 40px; }
+  .palette-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-2);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+  }
+  .swatches { display: flex; gap: 12px; flex-wrap: wrap; }
+  .swatch {
+    flex: 1;
+    min-width: 140px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: transform 0.15s;
+  }
+  .swatch:hover { transform: translateY(-3px); }
+  .swatch-color {
+    height: 100px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 12px;
+  }
+  .swatch-color .primary-badge {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.4);
+    color: rgba(255,255,255,0.7);
+    backdrop-filter: blur(4px);
+  }
+  .swatch-info {
+    background: var(--black-2);
+    padding: 14px;
+  }
+  .swatch-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .swatch-hex {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .swatch-desc {
+    font-size: 11px;
+    color: var(--gray-2);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* ── USAGE RULES */
+  .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .rule-card {
+    background: var(--black-2);
+    border: 1px solid var(--black-4);
+    border-radius: var(--radius-md);
+    padding: 24px;
+  }
+  .rule-card.do { border-left: 3px solid var(--gold); }
+  .rule-card.dont { border-left: 3px solid var(--error); }
+  .rule-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .rule-tag.do { background: rgba(201,169,110,0.15); color: var(--gold); }
+  .rule-tag.dont { background: rgba(140,58,58,0.2); color: #C97070; }
+  .rule-card h4 { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+  .rule-card p { font-size: 13px; color: var(--gray-2); line-height: 1.6; }
+
+  /* ── UI PREVIEW */
+  .ui-previews { display: flex; flex-direction: column; gap: 16px; }
+  .preview-box {
+    background: var(--black-2);
+    border: 1px solid var(--black-4);
+    border-radius: var(--radius-md);
+    padding: 28px;
+  }
+  .preview-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-2);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--gold); color: var(--black); }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--gold);
+    border: 1.5px solid var(--gold-deep);
+  }
+  .btn-secondary:hover { border-color: var(--gold); background: rgba(201,169,110,0.08); }
+  .btn-ghost {
+    background: var(--black-3);
+    color: var(--gray-1);
+    border: 1px solid var(--black-4);
+  }
+  .btn-danger { background: rgba(140,58,58,0.3); color: #D47070; border: 1px solid #5A2828; }
+
+  /* Community card preview */
+  .community-card {
+    background: var(--black-3);
+    border: 1px solid var(--black-4);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    max-width: 360px;
+  }
+  .community-banner {
+    height: 80px;
+    background: linear-gradient(135deg, #1A1712 0%, #2A2318 50%, #1A1712 100%);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 16px;
+  }
+  .community-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,169,110,0.1) 0%, transparent 60%);
+  }
+  .community-icon {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: var(--black);
+    border: 2px solid var(--black-4);
+    transform: translateY(50%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .community-body { padding: 32px 16px 16px; }
+  .community-name { font-size: 15px; font-weight: 700; color: var(--white); }
+  .community-desc { font-size: 12px; color: var(--gray-2); margin-top: 4px; }
+  .community-stats {
+    display: flex; gap: 16px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--gray-2);
+  }
+  .community-stats strong { color: var(--gold); }
+  .community-join {
+    margin-top: 14px;
+    width: 100%;
+    padding: 9px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* Post preview */
+  .post {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--black-4);
+    display: flex;
+    gap: 12px;
+  }
+  .post:last-child { border-bottom: none; padding-bottom: 0; }
+  .post-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-deep), var(--gold));
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--black);
+  }
+  .post-meta { font-size: 12px; color: var(--gray-2); margin-bottom: 4px; }
+  .post-meta strong { color: var(--white); font-weight: 600; }
+  .post-meta .handle { color: var(--gold-muted); }
+  .post-content { font-size: 13px; color: var(--gray-1); line-height: 1.55; }
+  .post-actions {
+    display: flex; gap: 18px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--gray-3);
+  }
+  .post-actions span { cursor: pointer; transition: color 0.1s; }
+  .post-actions span:hover { color: var(--gold); }
+  .post-actions .liked { color: var(--gold); }
+
+  /* ── TYPOGRAPHY */
+  .type-scale { display: flex; flex-direction: column; gap: 20px; }
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    padding: 20px;
+    background: var(--black-2);
+    border: 1px solid var(--black-4);
+    border-radius: var(--radius-md);
+  }
+  .type-meta {
+    min-width: 160px;
+    flex-shrink: 0;
+  }
+  .type-meta .type-name { font-size: 11px; font-weight: 700; color: var(--gold-muted); text-transform: uppercase; letter-spacing: 1px; }
+  .type-meta .type-spec { font-size: 11px; color: var(--gray-3); font-family: monospace; margin-top: 2px; }
+  .type-sample { color: var(--white); }
+
+  /* ── GRADIENT PALETTE */
+  .gradient-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .gradient-swatch {
+    flex: 1;
+    min-width: 160px;
+    height: 80px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ── SPACING */
+  .spacing-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .spacing-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .spacing-bar { background: var(--gold); border-radius: 3px; width: 40px; }
+  .spacing-label { font-size: 11px; color: var(--gray-2); text-align: center; }
+  .spacing-val { font-family: monospace; font-size: 11px; color: var(--gold); }
+
+  /* ── TOKENS TABLE */
+  .tokens { width: 100%; border-collapse: collapse; }
+  .tokens th {
+    text-align: left;
+    padding: 10px 16px;
+    background: var(--black-2);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--black-4);
+  }
+  .tokens td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--black-4);
+    font-size: 13px;
+  }
+  .tokens tr:last-child td { border-bottom: none; }
+  .tokens tr:hover td { background: rgba(255,255,255,0.015); }
+  .token-name { font-family: monospace; color: var(--gold); font-size: 12px; }
+  .token-val { font-family: monospace; color: var(--gray-1); font-size: 12px; }
+  .token-desc { color: var(--gray-2); }
+  .color-dot {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* ── FOOTER */
+  .footer {
+    border-top: 1px solid var(--black-4);
+    padding: 32px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--gray-3);
+    font-size: 12px;
+  }
+  .footer strong { color: var(--gold-muted); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <svg class="logo-img" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#0F0E0C" rx="20"/>
+    <!-- Left figure -->
+    <circle cx="34" cy="45" r="10" fill="#C9A96E"/>
+    <path d="M16 72 Q16 58 34 58 Q52 58 52 72" fill="#C9A96E"/>
+    <!-- Left helmet -->
+    <ellipse cx="34" cy="34" rx="13" ry="10" fill="#C9A96E"/>
+    <rect x="21" y="38" width="26" height="4" rx="2" fill="#C9A96E"/>
+    <!-- Right figure -->
+    <circle cx="66" cy="45" r="10" fill="#C9A96E"/>
+    <path d="M48 72 Q48 58 66 58 Q84 58 84 72" fill="none" stroke="#C9A96E" stroke-width="5"/>
+    <!-- Right helmet -->
+    <ellipse cx="66" cy="34" rx="13" ry="10" fill="#C9A96E"/>
+    <rect x="53" y="38" width="26" height="4" rx="2" fill="#C9A96E"/>
+  </svg>
+  <div class="header-text">
+    <h1><span>TCOM</span> · Trenches Community</h1>
+    <p>Visual Identity & Color System — Brand Guidelines v1.0</p>
+    <span class="doc-type">Brand Guidelines</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══ SECTION 1: PRIMARY PALETTE ═══ -->
+  <div class="section">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">Primary Color Palette</div>
+    <hr class="divider"/>
+
+    <div class="palette-group">
+      <div class="palette-group-title">🖤 Foundation — Blacks</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0F0E0C;">
+            <span class="primary-badge">LOGO BG</span>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Trench Black</div>
+            <div class="swatch-hex">#0F0E0C</div>
+            <div class="swatch-desc">Primary background. Warm black pulled directly from the logo.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#1A1916;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Surface</div>
+            <div class="swatch-hex">#1A1916</div>
+            <div class="swatch-desc">Cards, panels, modals. Slightly lighter than background.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#242220;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Elevated Surface</div>
+            <div class="swatch-hex">#242220</div>
+            <div class="swatch-desc">Input fields, dropdowns, hover states.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#2E2B28;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Border</div>
+            <div class="swatch-hex">#2E2B28</div>
+            <div class="swatch-desc">Dividers, borders, separators.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="palette-group">
+      <div class="palette-group-title">🥇 Brand Gold — Core Identity</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#C9A96E;">
+            <span class="primary-badge">PRIMARY</span>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Trench Gold</div>
+            <div class="swatch-hex">#C9A96E</div>
+            <div class="swatch-desc">The hero color. Logo icon, primary buttons, active states. Use with authority.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#DFC28F;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Gold Light</div>
+            <div class="swatch-hex">#DFC28F</div>
+            <div class="swatch-desc">Hover states, highlights. Slightly brighter than primary.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#F0DDB8; border:1px solid #2E2B28;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Gold Pale</div>
+            <div class="swatch-hex">#F0DDB8</div>
+            <div class="swatch-desc">Large headings, display text on dark backgrounds.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#8C7248;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Gold Muted</div>
+            <div class="swatch-hex">#8C7248</div>
+            <div class="swatch-desc">Secondary labels, captions, metadata. Subdued gold.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#7A5E30;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Gold Deep</div>
+            <div class="swatch-hex">#7A5E30</div>
+            <div class="swatch-desc">Borders on gold elements, shadows, subtle accents.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="palette-group">
+      <div class="palette-group-title">📝 Text Hierarchy</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#F5F0E8;">
+            <span class="primary-badge" style="color:#333;">HEADINGS</span>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Warm White</div>
+            <div class="swatch-hex">#F5F0E8</div>
+            <div class="swatch-desc">Never pure white. Warm tint keeps it on-brand.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#C4B99A;">
+            <span class="primary-badge">BODY</span>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Sand</div>
+            <div class="swatch-hex">#C4B99A</div>
+            <div class="swatch-desc">Default body text. Readable, warm, not harsh.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#8A7E68;">
+            <span class="primary-badge">SECONDARY</span>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Dusk</div>
+            <div class="swatch-hex">#8A7E68</div>
+            <div class="swatch-desc">Secondary info, timestamps, handles, metadata.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#4A4438;">
+            <span class="primary-badge">DISABLED</span>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Ash</div>
+            <div class="swatch-hex">#4A4438</div>
+            <div class="swatch-desc">Placeholders, disabled states, ghost text.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 2: GRADIENTS ═══ -->
+  <div class="section">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">Approved Gradients</div>
+    <hr class="divider"/>
+    <div class="gradient-row">
+      <div class="gradient-swatch" style="background: linear-gradient(135deg, #0F0E0C 0%, #1f1a10 100%);">
+        Page Background
+      </div>
+      <div class="gradient-swatch" style="background: linear-gradient(135deg, #C9A96E 0%, #7A5E30 100%);">
+        Gold Gradient (CTAs)
+      </div>
+      <div class="gradient-swatch" style="background: linear-gradient(135deg, #1A1916 0%, #2A2318 50%, #1A1916 100%);">
+        Card / Banner BG
+      </div>
+      <div class="gradient-swatch" style="background: linear-gradient(135deg, rgba(201,169,110,0.15) 0%, transparent 60%);">
+        Gold Glow Overlay
+      </div>
+      <div class="gradient-swatch" style="background: radial-gradient(circle at 30% 50%, rgba(201,169,110,0.12) 0%, transparent 65%);">
+        Radial Glow
+      </div>
+    </div>
+    <p style="color:var(--gray-2); font-size:12px; margin-top:14px;">⚠️ Never use gradients with colors outside this palette. No blues, greens, or purples in gradients.</p>
+  </div>
+
+  <!-- ═══ SECTION 3: USAGE RULES ═══ -->
+  <div class="section">
+    <div class="section-label">Section 03</div>
+    <div class="section-title">Color Usage Rules</div>
+    <hr class="divider"/>
+    <div class="rules-grid">
+      <div class="rule-card do">
+        <span class="rule-tag do">✓ Do</span>
+        <h4>Gold on Black always</h4>
+        <p>Use Trench Gold (#C9A96E) exclusively on the black family of backgrounds. This is the logo's native contrast ratio and must be maintained.</p>
+      </div>
+      <div class="rule-card dont">
+        <span class="rule-tag dont">✗ Don't</span>
+        <h4>Gold on light backgrounds</h4>
+        <p>Never place Trench Gold on white or light backgrounds. It loses contrast and breaks the brand identity. TCOM is a dark-first brand.</p>
+      </div>
+      <div class="rule-card do">
+        <span class="rule-tag do">✓ Do</span>
+        <h4>Warm tones only</h4>
+        <p>Every color in the palette has a warm undertone (slight brown/yellow bias). Keep this in all custom additions. The brand lives in warm blacks and aged gold.</p>
+      </div>
+      <div class="rule-card dont">
+        <span class="rule-tag dont">✗ Don't</span>
+        <h4>Cool grays or pure white</h4>
+        <p>Never use #FFFFFF, #F0F0F0, or any cool-tone gray. Pure white feels clinical and kills the trenches aesthetic. Always use Warm White (#F5F0E8).</p>
+      </div>
+      <div class="rule-card do">
+        <span class="rule-tag do">✓ Do</span>
+        <h4>Gold for primary actions only</h4>
+        <p>Reserve Trench Gold for the single most important action on any screen (Join, Post, Create). This keeps its power. Use Ghost or Secondary buttons elsewhere.</p>
+      </div>
+      <div class="rule-card dont">
+        <span class="rule-tag dont">✗ Don't</span>
+        <h4>Overuse gold</h4>
+        <p>If everything is gold, nothing is. Don't use gold for more than 2 UI elements in the same viewport. Scarcity is what makes it feel premium.</p>
+      </div>
+      <div class="rule-card do">
+        <span class="rule-tag do">✓ Do</span>
+        <h4>Dark mode is the only mode</h4>
+        <p>TCOM is dark-only. Do not build a light mode. The dark aesthetic is core to the crypto trenches identity and the logo was designed for it.</p>
+      </div>
+      <div class="rule-card dont">
+        <span class="rule-tag dont">✗ Don't</span>
+        <h4>Bright accent colors</h4>
+        <p>Avoid neon green, electric blue, or hot pink accents. If a status color is needed (error/success), keep it muted and earthy. The brand palette doesn't pop, it glows.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 4: UI PREVIEW ═══ -->
+  <div class="section">
+    <div class="section-label">Section 04</div>
+    <div class="section-title">UI Components in Brand Colors</div>
+    <hr class="divider"/>
+    <div class="ui-previews">
+
+      <!-- Buttons -->
+      <div class="preview-box">
+        <div class="preview-label">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">⚔️ Join Community</button>
+          <button class="btn btn-secondary">Create Post</button>
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-danger">Remove Member</button>
+        </div>
+        <div style="margin-top:16px; font-size:12px; color:var(--gray-2);">
+          Primary (gold fill) · Secondary (gold outline) · Ghost (surface) · Danger (muted red)
+        </div>
+      </div>
+
+      <!-- Community card + Post feed side by side -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="preview-box">
+          <div class="preview-label">Community Card</div>
+          <div class="community-card">
+            <div class="community-banner">
+              <div class="community-icon">⚔️</div>
+            </div>
+            <div class="community-body">
+              <div class="community-name">Bitcoin Trenches</div>
+              <div class="community-desc">For the ones who hold through the storms</div>
+              <div class="community-stats">
+                <span><strong>4.2K</strong> members</span>
+                <span><strong>893</strong> posts</span>
+              </div>
+              <button class="community-join">Join Community</button>
+            </div>
+          </div>
+        </div>
+        <div class="preview-box">
+          <div class="preview-label">Post Feed</div>
+          <div class="post">
+            <div class="post-avatar">B</div>
+            <div>
+              <div class="post-meta"><strong>BasedHolder</strong> <span class="handle">@basedholder</span> · 2m</div>
+              <div class="post-content">Still accumulating. The trenches are where fortunes are made, not on the way up. 🪖</div>
+              <div class="post-actions">
+                <span class="liked">♥ 142</span>
+                <span>💬 18</span>
+                <span>↗ Share</span>
+              </div>
+            </div>
+          </div>
+          <div class="post">
+            <div class="post-avatar" style="background:linear-gradient(135deg,#4a3a1a,#8C7248);">T</div>
+            <div>
+              <div class="post-meta"><strong>TrenchWarrior</strong> <span class="handle">@trenchwarrior</span> · 14m</div>
+              <div class="post-content">New community for $PEPE holders just dropped. Link in bio. Only for the real ones 🔥</div>
+              <div class="post-actions">
+                <span>♥ 87</span>
+                <span>💬 24</span>
+                <span>↗ Share</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 5: TYPOGRAPHY ═══ -->
+  <div class="section">
+    <div class="section-label">Section 05</div>
+    <div class="section-title">Typography Scale</div>
+    <hr class="divider"/>
+    <div class="type-scale">
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Display</div>
+          <div class="type-spec">48px / 900 / -2px</div>
+        </div>
+        <div class="type-sample" style="font-size:48px; font-weight:900; letter-spacing:-2px; color:#F0DDB8; line-height:1;">Trenches Community</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Heading 1</div>
+          <div class="type-spec">32px / 800 / -1px</div>
+        </div>
+        <div class="type-sample" style="font-size:32px; font-weight:800; letter-spacing:-1px; color:#F5F0E8;">Discover Communities</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Heading 2</div>
+          <div class="type-spec">22px / 700 / -0.5px</div>
+        </div>
+        <div class="type-sample" style="font-size:22px; font-weight:700; letter-spacing:-0.5px; color:#F5F0E8;">Bitcoin Trenches</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Body</div>
+          <div class="type-spec">14px / 400 / 0px</div>
+        </div>
+        <div class="type-sample" style="font-size:14px; font-weight:400; color:#C4B99A;">The place for crypto holders to connect, share alpha, and survive the market together.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Caption</div>
+          <div class="type-spec">12px / 500 / 0.3px</div>
+        </div>
+        <div class="type-sample" style="font-size:12px; font-weight:500; letter-spacing:0.3px; color:#8A7E68;">@basedtrader · 14 minutes ago · 142 members</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Label / Tag</div>
+          <div class="type-spec">11px / 700 / 1.5px CAPS</div>
+        </div>
+        <div class="type-sample" style="font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#C9A96E;">Community · Moderator · TCOM</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Code / Ticker</div>
+          <div class="type-spec">13px / 600 / mono</div>
+        </div>
+        <div class="type-sample" style="font-size:13px; font-weight:600; font-family:monospace; color:#C9A96E;">$TCOM · #0F0E0C · gen_random_uuid()</div>
+      </div>
+    </div>
+    <p style="margin-top:20px; color:var(--gray-2); font-size:13px;">Font: <strong style="color:var(--gold-muted)">Inter</strong> for all UI. Fall back to system-ui. Avoid serif or script fonts entirely.</p>
+  </div>
+
+  <!-- ═══ SECTION 6: DESIGN TOKENS ═══ -->
+  <div class="section">
+    <div class="section-label">Section 06</div>
+    <div class="section-title">CSS Design Tokens</div>
+    <hr class="divider"/>
+    <div style="background:var(--black-2); border:1px solid var(--black-4); border-radius:var(--radius-md); overflow:hidden;">
+      <table class="tokens">
+        <thead>
+          <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="token-name">--color-bg</td><td class="token-val"><span class="color-dot" style="background:#0F0E0C;"></span>#0F0E0C</td><td class="token-desc">App background</td></tr>
+          <tr><td class="token-name">--color-surface</td><td class="token-val"><span class="color-dot" style="background:#1A1916;"></span>#1A1916</td><td class="token-desc">Cards, panels</td></tr>
+          <tr><td class="token-name">--color-surface-raised</td><td class="token-val"><span class="color-dot" style="background:#242220;"></span>#242220</td><td class="token-desc">Inputs, dropdowns</td></tr>
+          <tr><td class="token-name">--color-border</td><td class="token-val"><span class="color-dot" style="background:#2E2B28;"></span>#2E2B28</td><td class="token-desc">All borders & dividers</td></tr>
+          <tr><td class="token-name">--color-gold</td><td class="token-val"><span class="color-dot" style="background:#C9A96E;"></span>#C9A96E</td><td class="token-desc">Primary CTA, active state, logo</td></tr>
+          <tr><td class="token-name">--color-gold-hover</td><td class="token-val"><span class="color-dot" style="background:#DFC28F;"></span>#DFC28F</td><td class="token-desc">Gold hover state</td></tr>
+          <tr><td class="token-name">--color-gold-pale</td><td class="token-val"><span class="color-dot" style="background:#F0DDB8;"></span>#F0DDB8</td><td class="token-desc">Display headings</td></tr>
+          <tr><td class="token-name">--color-gold-muted</td><td class="token-val"><span class="color-dot" style="background:#8C7248;"></span>#8C7248</td><td class="token-desc">Labels, captions</td></tr>
+          <tr><td class="token-name">--color-gold-border</td><td class="token-val"><span class="color-dot" style="background:#7A5E30;"></span>#7A5E30</td><td class="token-desc">Gold element borders</td></tr>
+          <tr><td class="token-name">--color-text</td><td class="token-val"><span class="color-dot" style="background:#F5F0E8; border:1px solid #2E2B28;"></span>#F5F0E8</td><td class="token-desc">Headings, names</td></tr>
+          <tr><td class="token-name">--color-text-body</td><td class="token-val"><span class="color-dot" style="background:#C4B99A;"></span>#C4B99A</td><td class="token-desc">Body copy, post content</td></tr>
+          <tr><td class="token-name">--color-text-secondary</td><td class="token-val"><span class="color-dot" style="background:#8A7E68;"></span>#8A7E68</td><td class="token-desc">Timestamps, handles</td></tr>
+          <tr><td class="token-name">--color-text-disabled</td><td class="token-val"><span class="color-dot" style="background:#4A4438;"></span>#4A4438</td><td class="token-desc">Placeholders, disabled</td></tr>
+          <tr><td class="token-name">--radius-sm</td><td class="token-val">6px</td><td class="token-desc">Buttons, tags, badges</td></tr>
+          <tr><td class="token-name">--radius-md</td><td class="token-val">12px</td><td class="token-desc">Cards, inputs, modals</td></tr>
+          <tr><td class="token-name">--radius-lg</td><td class="token-val">20px</td><td class="token-desc">App icon, large containers</td></tr>
+          <tr><td class="token-name">--shadow-gold</td><td class="token-val">0 0 24px rgba(201,169,110,0.2)</td><td class="token-desc">Logo, CTA glow effect</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <span><strong>TCOM · Trenches Community</strong> — Brand Guidelines v1.0</span>
+  <span>Colors extracted from official logo · Warm black + aged gold palette</span>
+</div>
+
+</body>
+</html>

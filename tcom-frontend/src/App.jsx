@@ -51,8 +51,15 @@ function AppShell({ children }) {
       <header className="topbar">
         <div className="topbar-inner">
           <Link to="/" className="topbar-brand">
-            <span className="logo">TC</span>
-            TCOM
+            <img
+              src="/tcomlogo.jpeg"
+              alt="TCOM logo"
+              className="logo"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <span>TCOM</span>
           </Link>
           <nav className="topbar-nav">
             <NavLink to="/" end>Explore</NavLink>
@@ -115,9 +122,9 @@ export default function App() {
         position="bottom-right"
         toastOptions={{
           style: {
-            background: '#111418',
-            color: '#e8edf2',
-            border: '1px solid #1e2630',
+            background: '#1A1916',
+            color: '#F5F0E8',
+            border: '1px solid #2E2B28',
             borderRadius: 10,
             fontSize: '0.92rem',
           },

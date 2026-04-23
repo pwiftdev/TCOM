@@ -4,7 +4,7 @@ import { communityApi } from '../api/communities';
 import { CommunityCard } from '../components/community/CommunityCard';
 import { LoginWithX } from '../components/auth/LoginWithX';
 import { useAuthStore } from '../store/authStore';
-import { IconPlus } from '../components/ui/Icon';
+import { IconPlus, IconX } from '../components/ui/Icon';
 
 export default function Home() {
   const user = useAuthStore((s) => s.user);
@@ -16,6 +16,14 @@ export default function Home() {
   });
 
   const communities = data || [];
+  const shareUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const shareText = 'Trenches, X decided to take down your main weapon. TCOMs are here now.';
+
+  function shareTcomOnX() {
+    if (!shareUrl) return;
+    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
 
   return (
     <div className="container grid fade-in">
@@ -35,6 +43,32 @@ export default function Home() {
           ) : (
             <LoginWithX />
           )}
+          <button type="button" className="btn-ghost" onClick={shareTcomOnX}>
+            <IconX width={14} height={14} /> Share TCOM on X
+          </button>
+        </div>
+      </section>
+
+      <section className="lore fade-in">
+        <div className="lore-headline">THE TRENCHES NEVER LOG OFF</div>
+        <h2>Trenches, X decided to take down your main weapon. <span>TCOMs are here now.</span></h2>
+        <p>
+          Market moving at lightspeed. Threads buried. Signals fragmented. Your crew still needs a base. TCOM is the
+          war room: communities, posts, replies, receipts, all anchored to X identity.
+        </p>
+        <div className="lore-grid">
+          <article className="lore-card">
+            <h3>01 — Regroup</h3>
+            <p>Find your people fast. Move from noise to conviction with focused community feeds.</p>
+          </article>
+          <article className="lore-card">
+            <h3>02 — Coordinate</h3>
+            <p>Drop thesis, post setups, reply in-thread, and build context like a living playbook.</p>
+          </article>
+          <article className="lore-card">
+            <h3>03 — Push</h3>
+            <p>When it’s time to broadcast, push your community and its alpha straight back to X.</p>
+          </article>
         </div>
       </section>
 

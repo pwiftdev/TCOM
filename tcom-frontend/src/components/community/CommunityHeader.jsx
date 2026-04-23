@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { communityApi } from '../../api/communities';
 import { useAuthStore } from '../../store/authStore';
 import { Avatar } from '../ui/Avatar';
-import { IconUsers, IconSettings } from '../ui/Icon';
+import { IconUsers, IconSettings, IconX } from '../ui/Icon';
 import { MembersDialog } from './MembersDialog';
 import { LoginWithX } from '../auth/LoginWithX';
 
@@ -40,6 +40,14 @@ export function CommunityHeader({ community }) {
   });
 
   const memberCount = community.member_count ?? 0;
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/c/${community.slug}` : '';
+  const shareText = `Join ${community.name} on TCOM. Trenches never die.`;
+
+  function shareOnX() {
+    if (!shareUrl) return;
+    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
 
   return (
     <>
@@ -107,9 +115,17 @@ export function CommunityHeader({ community }) {
                     <IconSettings width={14} height={14} /> Manage
                   </Link>
                 )}
+                <button type="button" className="btn-ghost" onClick={shareOnX}>
+                  <IconX width={14} height={14} /> Share on X
+                </button>
               </>
             ) : (
-              <LoginWithX label="Sign in with X to join" />
+              <>
+                <LoginWithX label="Sign in with X to join" />
+                <button type="button" className="btn-ghost" onClick={shareOnX}>
+                  <IconX width={14} height={14} /> Share on X
+                </button>
+              </>
             )}
           </div>
         </div>

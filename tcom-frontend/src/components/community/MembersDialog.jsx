@@ -11,7 +11,7 @@ export function MembersDialog({ open, onOpenChange, communitySlug, memberCount }
     enabled: open,
     staleTime: 10_000,
   });
-  const members = data || [];
+  const members = (data || []).filter((m) => m?.users?.username);
 
   return (
     <Dialog
@@ -25,7 +25,7 @@ export function MembersDialog({ open, onOpenChange, communitySlug, memberCount }
       {!isLoading && members.length === 0 && <p className="muted">No members yet.</p>}
       <div>
         {members.map((m) => (
-          <div className="member-row" key={(m.users?.username || '') + m.joined_at}>
+          <div className="member-row" key={m.id || `${m.user_id}-${m.joined_at}`}>
             <Avatar size="sm" src={m.users?.avatar_url} name={m.users?.username} />
             <div className="member-info">
               <strong>{m.users?.display_name || m.users?.username || 'Unknown'}</strong>

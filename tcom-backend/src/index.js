@@ -35,6 +35,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/communities', require('./routes/communities'));
 app.use('/posts', require('./routes/posts'));
 app.use('/users', require('./routes/users'));
+app.use('/stats', require('./routes/stats'));
 app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({ error: 'Internal server error' });

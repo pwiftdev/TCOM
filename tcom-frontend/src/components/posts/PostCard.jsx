@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -7,11 +7,20 @@ import { postApi } from '../../api/posts';
 import { Avatar } from '../ui/Avatar';
 import { LikeButton } from './LikeButton';
 import { ReplyThread } from './ReplyThread';
-import { IconReply, IconTrash } from '../ui/Icon';
+import { IconReply, IconTrash, IconEye } from '../ui/Icon';
 import { useAuthStore } from '../../store/authStore';
 import { UserXLink } from '../profile/UserXLink';
 
 dayjs.extend(relativeTime);
+
+const viewedThisSession = new Set();
+
+function formatViews(n) {
+  if (!n) return 0;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n;
+}
 
 function PostMedia({ urls }) {
   if (!Array.isArray(urls) || urls.length === 0) return null;
@@ -28,8 +37,53 @@ function PostMedia({ urls }) {
 
 export function PostCard({ post, communitySlug, canPin = false, canModerate = false, listKey }) {
   const [showReplies, setShowReplies] = useState(false);
+  const [localViews, setLocalViews] = useState(post.view_count || 0);
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
+  const articleRef = useRef(null);
+
+  useEffect(() => {
+    setLocalViews(post.view_count || 0);
+  }, [post.view_count]);
+
+  useEffect(() => {
+    if (!post?.id) return undefined;
+    if (viewedThisSession.has(post.id)) return undefined;
+    const node = articleRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return undefined;
+
+    let fired = false;
+    let visibleTimer = null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            if (fired) return;
+            clearTimeout(visibleTimer);
+            visibleTimer = setTimeout(() => {
+              if (fired || viewedThisSession.has(post.id)) return;
+              fired = true;
+              viewedThisSession.add(post.id);
+              setLocalViews((v) => v + 1);
+              postApi.view(post.id).catch(() => {
+                viewedThisSession.delete(post.id);
+              });
+              observer.disconnect();
+            }, 800);
+          } else {
+            clearTimeout(visibleTimer);
+          }
+        }
+      },
+      { threshold: [0, 0.5, 1] },
+    );
+    observer.observe(node);
+    return () => {
+      clearTimeout(visibleTimer);
+      observer.disconnect();
+    };
+  }, [post?.id]);
 
   const remove = useMutation({
     mutationFn: () => postApi.remove(post.id),
@@ -60,7 +114,7 @@ export function PostCard({ post, communitySlug, canPin = false, canModerate = fa
   }
 
   return (
-    <article className="post">
+    <article className="post" ref={articleRef}>
       <Avatar src={post.users?.avatar_url} name={post.users?.username || '?'} />
       <div className="post-body">
         <header className="post-meta">
@@ -90,6 +144,14 @@ export function PostCard({ post, communitySlug, canPin = false, canModerate = fa
             <span>{replyCount}</span>
           </button>
           <LikeButton post={post} communitySlug={communitySlug} listKey={listKey} />
+          <span
+            className="btn-icon views-stat"
+            aria-label={`${localViews} views`}
+            title={`${localViews.toLocaleString()} ${localViews === 1 ? 'view' : 'views'}`}
+          >
+            <IconEye width={16} height={16} />
+            <span>{formatViews(localViews)}</span>
+          </span>
           {canPin && (
             <button
               type="button"

@@ -14,6 +14,7 @@ import { useAuthBootstrap } from './hooks/useAuth';
 import { useAuthStore } from './store/authStore';
 import { Avatar } from './components/ui/Avatar';
 import { LoginWithX } from './components/auth/LoginWithX';
+import { OnlineIndicator } from './components/ui/OnlineIndicator';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,6 +68,7 @@ function AppShell({ children }) {
             {user && <NavLink to={`/profile/${user.username}`}>Profile</NavLink>}
           </nav>
           <div className="topbar-user">
+            <OnlineIndicator />
             {user ? (
               <>
                 <Avatar size="xs" src={user.avatar_url} name={user.username} />

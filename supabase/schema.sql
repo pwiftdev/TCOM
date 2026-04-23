@@ -87,6 +87,17 @@ create table if not exists community_bans (
 create index if not exists idx_posts_community_created on posts(community_id, created_at desc);
 create index if not exists idx_community_bans_community on community_bans(community_id, created_at desc);
 
+-- Presence: track last time a user hit the API so we can compute online count
+alter table users add column if not exists last_seen_at timestamptz;
+create index if not exists idx_users_last_seen on users(last_seen_at desc);
+
+-- Post views
+alter table posts add column if not exists view_count integer default 0;
+
+create or replace function increment_view_count(post_uuid uuid) returns void language sql as $$
+  update posts set view_count = view_count + 1 where id = post_uuid;
+$$;
+
 create or replace function increment_like_count(post_uuid uuid) returns void language sql as $$
   update posts set like_count = like_count + 1 where id = post_uuid;
 $$;

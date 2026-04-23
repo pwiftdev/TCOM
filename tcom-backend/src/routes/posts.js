@@ -168,6 +168,15 @@ router.post('/:id/reply', authenticate, async (req, res) => {
   return res.status(201).json({ ...data, liked_by_me: false });
 });
 
+router.post('/:id/view', optionalAuth, async (req, res) => {
+  try {
+    await supabase.rpc('increment_view_count', { post_uuid: req.params.id });
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(400).json({ error: err?.message || 'Could not record view' });
+  }
+});
+
 router.post('/:id/like', authenticate, async (req, res) => {
   const { data: existing } = await supabase
     .from('post_likes')

@@ -40,5 +40,6 @@ export const postApi = {
   toggleLike: (id) => api.post(`/posts/${id}/like`).then((r) => r.data),
   pin: (id, pinned = true) => api.post(`/posts/${id}/pin`, { pinned }).then((r) => r.data),
   remove: (id) => api.delete(`/posts/${id}`).then((r) => r.data),
+  view: (id) => api.post(`/posts/${id}/view`).then((r) => r.data),
   uploadMedia: (file) => uploadMediaToSupabase(file),
 };

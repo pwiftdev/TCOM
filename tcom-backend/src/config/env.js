@@ -1,20 +1,27 @@
 require('dotenv').config();
 
+function readEnv(key, { trim = true } = {}) {
+  const value = process.env[key];
+  if (value == null) return value;
+  return trim ? value.trim() : value;
+}
+
 const required = ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_SERVICE_KEY', 'FRONTEND_URL', 'SESSION_SECRET'];
 for (const key of required) {
-  if (!process.env[key]) throw new Error(`Missing required env var: ${key}`);
+  const value = readEnv(key);
+  if (!value) throw new Error(`Missing required env var: ${key}`);
 }
 
 module.exports = {
-  port: Number(process.env.PORT || 4000),
-  frontendUrl: process.env.FRONTEND_URL,
-  jwtSecret: process.env.JWT_SECRET,
-  xClientId: process.env.X_CLIENT_ID,
-  xClientSecret: process.env.X_CLIENT_SECRET,
-  xCallbackUrl: process.env.X_CALLBACK_URL,
-  supabaseUrl: process.env.SUPABASE_URL,
-  supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
-  sessionSecret: process.env.SESSION_SECRET,
-  redisUrl: process.env.REDIS_URL,
-  nodeEnv: process.env.NODE_ENV || 'development'
+  port: Number(readEnv('PORT', { trim: false }) || 4000),
+  frontendUrl: readEnv('FRONTEND_URL'),
+  jwtSecret: readEnv('JWT_SECRET'),
+  xClientId: readEnv('X_CLIENT_ID'),
+  xClientSecret: readEnv('X_CLIENT_SECRET'),
+  xCallbackUrl: readEnv('X_CALLBACK_URL'),
+  supabaseUrl: readEnv('SUPABASE_URL'),
+  supabaseServiceKey: readEnv('SUPABASE_SERVICE_KEY'),
+  sessionSecret: readEnv('SESSION_SECRET'),
+  redisUrl: readEnv('REDIS_URL'),
+  nodeEnv: readEnv('NODE_ENV') || 'development'
 };

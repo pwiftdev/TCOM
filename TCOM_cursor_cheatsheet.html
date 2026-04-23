@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TCOM — Cursor Development Cheat Sheet</title>
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111418;
+    --surface2: #181d24;
+    --border: #1e2630;
+    --accent: #00c97a;
+    --accent2: #f7a523;
+    --accent3: #5b8af5;
+    --accent4: #e05be0;
+    --text: #e8edf2;
+    --muted: #7a8899;
+    --code-bg: #0d1117;
+    --tag-green: rgba(0,201,122,0.12);
+    --tag-orange: rgba(247,165,35,0.12);
+    --tag-blue: rgba(91,138,245,0.12);
+    --tag-purple: rgba(224,91,224,0.12);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0a0c0f 0%, #0e1a12 50%, #0a0c0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 60px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(0,201,122,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 40%;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(247,165,35,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .logo-mark {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--accent) 0%, #00a860 100%);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    font-weight: 900;
+    color: #000;
+    letter-spacing: -1px;
+    box-shadow: 0 0 24px rgba(0,201,122,0.35);
+    flex-shrink: 0;
+  }
+  .logo-text h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .logo-text span {
+    color: var(--accent);
+  }
+  .logo-text p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .badge-green { background: var(--tag-green); color: var(--accent); border: 1px solid rgba(0,201,122,0.2); }
+  .badge-orange { background: var(--tag-orange); color: var(--accent2); border: 1px solid rgba(247,165,35,0.2); }
+  .badge-blue { background: var(--tag-blue); color: var(--accent3); border: 1px solid rgba(91,138,245,0.2); }
+  .badge-purple { background: var(--tag-purple); color: var(--accent4); border: 1px solid rgba(224,91,224,0.2); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1280px; margin: 0 auto; padding: 40px 40px; }
+
+  .section {
+    margin-bottom: 48px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .si-green { background: var(--tag-green); }
+  .si-orange { background: var(--tag-orange); }
+  .si-blue { background: var(--tag-blue); }
+  .si-purple { background: var(--tag-purple); }
+  .si-red { background: rgba(239,68,68,0.12); }
+
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+  .section-header .section-num {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+  }
+  .card h3.orange { color: var(--accent2); }
+  .card h3.blue { color: var(--accent3); }
+  .card h3.purple { color: var(--accent4); }
+  .card h3.red { color: #ef4444; }
+
+  .card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  /* ── CODE BLOCKS ── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    margin-top: 10px;
+  }
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    font-size: 12px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--accent);
+  }
+  .kw { color: #ff7b72; }       /* keyword */
+  .fn { color: #d2a8ff; }       /* function */
+  .str { color: #a5d6ff; }      /* string */
+  .cmt { color: #4a5568; font-style: italic; } /* comment */
+  .var { color: #ffa657; }      /* variable / const name */
+  .num { color: #79c0ff; }      /* numbers */
+  .key { color: #7ee787; }      /* object key */
+  .op { color: var(--muted); }  /* operators */
+  .typ { color: #f0883e; }      /* type */
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .td-key { color: var(--accent3); font-family: monospace; font-size: 12px; }
+  .td-type { color: var(--accent2); font-family: monospace; font-size: 12px; }
+  .td-note { color: var(--muted); }
+  .td-method { font-family: monospace; font-size: 12px; }
+  .method-get { color: var(--accent); }
+  .method-post { color: var(--accent2); }
+  .method-put { color: var(--accent3); }
+  .method-delete { color: #ef4444; }
+  .method-patch { color: var(--accent4); }
+
+  /* ── STEP LIST ── */
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #000;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-num.orange { background: var(--accent2); }
+  .step-num.blue { background: var(--accent3); }
+  .step-num.purple { background: var(--accent4); }
+  .step-body h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .step-body p { color: var(--muted); font-size: 12.5px; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+  .callout-green { background: var(--tag-green); border-left: 3px solid var(--accent); }
+  .callout-orange { background: var(--tag-orange); border-left: 3px solid var(--accent2); }
+  .callout-blue { background: var(--tag-blue); border-left: 3px solid var(--accent3); }
+  .callout-red { background: rgba(239,68,68,0.1); border-left: 3px solid #ef4444; }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body strong { color: #fff; display: block; margin-bottom: 2px; font-size: 13px; }
+  .callout-body p { color: var(--muted); line-height: 1.55; }
+
+  /* ── TAG ── */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .tag-green { background: var(--tag-green); color: var(--accent); }
+  .tag-orange { background: var(--tag-orange); color: var(--accent2); }
+  .tag-blue { background: var(--tag-blue); color: var(--accent3); }
+  .tag-purple { background: var(--tag-purple); color: var(--accent4); }
+  .tag-red { background: rgba(239,68,68,0.12); color: #ef4444; }
+
+  /* ── FILE TREE ── */
+  .file-tree {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 2;
+  }
+  .ft-dir { color: var(--accent3); font-weight: 600; }
+  .ft-file { color: var(--text); }
+  .ft-comment { color: var(--muted); font-style: italic; }
+  .ft-indent1 { padding-left: 20px; }
+  .ft-indent2 { padding-left: 40px; }
+  .ft-indent3 { padding-left: 60px; }
+
+  /* ── ENV TABLE ── */
+  .env-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 2;
+  }
+  .env-key { color: var(--accent3); }
+  .env-val { color: var(--accent2); }
+  .env-cmt { color: var(--muted); font-style: italic; }
+  .env-section { color: var(--muted); font-weight: 700; margin-top: 8px; display: block; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .flow-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .flow-box.green { border-color: rgba(0,201,122,0.4); color: var(--accent); background: var(--tag-green); }
+  .flow-box.orange { border-color: rgba(247,165,35,0.4); color: var(--accent2); background: var(--tag-orange); }
+  .flow-box.blue { border-color: rgba(91,138,245,0.4); color: var(--accent3); background: var(--tag-blue); }
+  .flow-box.purple { border-color: rgba(224,91,224,0.4); color: var(--accent4); background: var(--tag-purple); }
+  .flow-arrow { padding: 0 8px; color: var(--muted); font-size: 16px; }
+
+  /* ── OVERVIEW CARDS ── */
+  .overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .ov-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    text-align: center;
+  }
+  .ov-card .ov-icon { font-size: 28px; margin-bottom: 8px; }
+  .ov-card .ov-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+  .ov-card .ov-value { color: #fff; font-size: 14px; font-weight: 700; margin-top: 4px; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0 0 16px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 60px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .footer strong { color: var(--accent); }
+
+  /* ── PRINT / PAGE BREAKS ── */
+  @media print {
+    body { background: #fff; color: #000; }
+    .header { background: #f5f5f5; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ HEADER -->
+<div class="header">
+  <div class="logo-row">
+    <div class="logo-mark">TC</div>
+    <div class="logo-text">
+      <h1><span>TCOM</span> — Trenches Community</h1>
+      <p>Cursor Development Cheat Sheet &nbsp;·&nbsp; Full-Stack Crypto Community Platform</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="badge badge-green">⚡ Vite + React</span>
+    <span class="badge badge-orange">🟠 Heroku Backend</span>
+    <span class="badge badge-blue">🔵 Supabase DB</span>
+    <span class="badge badge-purple">🐦 X OAuth 2.0</span>
+    <span class="badge badge-green">▲ Vercel Frontend</span>
+    <span class="badge badge-orange">Node + Express</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MAIN -->
+<div class="container">
+
+  <!-- ─── SECTION 1: PROJECT OVERVIEW ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-green">🎯</div>
+      <h2>Project Overview</h2>
+      <span class="section-num">01 / 10</span>
+    </div>
+
+    <div class="overview-grid">
+      <div class="ov-card">
+        <div class="ov-icon">🏠</div>
+        <div class="ov-label">App Type</div>
+        <div class="ov-value">Community SaaS</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">🐦</div>
+        <div class="ov-label">Auth</div>
+        <div class="ov-value">X OAuth 2.0</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">🪙</div>
+        <div class="ov-label">Niche</div>
+        <div class="ov-value">Crypto / Web3</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">🌐</div>
+        <div class="ov-label">Scale Target</div>
+        <div class="ov-value">Multi-tenant</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Core Features to Build</h3>
+        <table>
+          <tr><td><span class="tag tag-green">Auth</span></td><td class="td-note">Login with X, sync profile (avatar, bio, followers, following)</td></tr>
+          <tr><td><span class="tag tag-orange">Communities</span></td><td class="td-note">Create, browse, join, leave communities</td></tr>
+          <tr><td><span class="tag tag-blue">Posts</span></td><td class="td-note">Create posts inside communities, with media support</td></tr>
+          <tr><td><span class="tag tag-purple">Social</span></td><td class="td-note">Likes, threaded replies, share links, member counts</td></tr>
+          <tr><td><span class="tag tag-green">Moderation</span></td><td class="td-note">Creator grants moderators, remove posts/members</td></tr>
+          <tr><td><span class="tag tag-orange">Profiles</span></td><td class="td-note">X-mirrored profile: avatar, handle, bio, stats</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Community Creator Controls</h3>
+        <table>
+          <tr><td><span class="tag tag-green">Banner</span></td><td class="td-note">Upload custom community banner image (1500×500 recommended)</td></tr>
+          <tr><td><span class="tag tag-orange">Icon</span></td><td class="td-note">Community icon / avatar (400×400)</td></tr>
+          <tr><td><span class="tag tag-blue">Name</span></td><td class="td-note">Community name + unique slug (URL-safe)</td></tr>
+          <tr><td><span class="tag tag-purple">Description</span></td><td class="td-note">Markdown-supported description text</td></tr>
+          <tr><td><span class="tag tag-green">Visibility</span></td><td class="td-note">Public / Private / Invite-only</td></tr>
+          <tr><td><span class="tag tag-orange">Moderators</span></td><td class="td-note">Grant/revoke mod role by X handle lookup</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <strong>Cursor Prompt Tip</strong>
+        <p>Tell Cursor: <em>"This is TCOM — a crypto community platform replacing X Communities. Users log in with X OAuth 2.0, their profile is synced from X API (avatar, bio, followers). Communities have posts, likes, replies. Stack: Vite + React frontend on Vercel, Express backend on Heroku, Supabase PostgreSQL."</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 2: TECH STACK ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-orange">🧱</div>
+      <h2>Tech Stack &amp; Dependencies</h2>
+      <span class="section-num">02 / 10</span>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Frontend — Vercel</h3>
+        <table>
+          <tr><td class="td-key">vite</td><td class="td-note">Build tool, dev server</td></tr>
+          <tr><td class="td-key">react 18</td><td class="td-note">UI framework</td></tr>
+          <tr><td class="td-key">react-router-dom v6</td><td class="td-note">Client routing</td></tr>
+          <tr><td class="td-key">@tanstack/react-query</td><td class="td-note">Server state / caching</td></tr>
+          <tr><td class="td-key">zustand</td><td class="td-note">Global auth/user state</td></tr>
+          <tr><td class="td-key">axios</td><td class="td-note">HTTP client</td></tr>
+          <tr><td class="td-key">tailwindcss</td><td class="td-note">Styling</td></tr>
+          <tr><td class="td-key">react-hot-toast</td><td class="td-note">Notifications</td></tr>
+          <tr><td class="td-key">react-dropzone</td><td class="td-note">Banner/icon uploads</td></tr>
+          <tr><td class="td-key">dayjs</td><td class="td-note">Date formatting</td></tr>
+          <tr><td class="td-key">@radix-ui/*</td><td class="td-note">Accessible UI primitives</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="orange">Backend — Heroku</h3>
+        <table>
+          <tr><td class="td-key">node 20+</td><td class="td-note">Runtime</td></tr>
+          <tr><td class="td-key">express 4</td><td class="td-note">HTTP framework</td></tr>
+          <tr><td class="td-key">passport.js</td><td class="td-note">OAuth strategy orchestrator</td></tr>
+          <tr><td class="td-key">passport-twitter</td><td class="td-note">X OAuth 2.0 (use v2 strategy)</td></tr>
+          <tr><td class="td-key">jsonwebtoken</td><td class="td-note">JWT session tokens</td></tr>
+          <tr><td class="td-key">@supabase/supabase-js</td><td class="td-note">DB client (service role key)</td></tr>
+          <tr><td class="td-key">multer</td><td class="td-note">File upload middleware</td></tr>
+          <tr><td class="td-key">sharp</td><td class="td-note">Image resizing before storage</td></tr>
+          <tr><td class="td-key">express-rate-limit</td><td class="td-note">API rate limiting</td></tr>
+          <tr><td class="td-key">helmet</td><td class="td-note">Security headers</td></tr>
+          <tr><td class="td-key">cors</td><td class="td-note">Cross-origin requests</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="blue">Database &amp; Storage — Supabase</h3>
+        <table>
+          <tr><td class="td-key">PostgreSQL</td><td class="td-note">Primary database (via Supabase)</td></tr>
+          <tr><td class="td-key">Supabase Auth</td><td class="td-note">NOT used — custom JWT</td></tr>
+          <tr><td class="td-key">Supabase Storage</td><td class="td-note">Community banners, icons</td></tr>
+          <tr><td class="td-key">RLS Policies</td><td class="td-note">Row-level security per table</td></tr>
+          <tr><td class="td-key">Realtime</td><td class="td-note">Optional: live post updates</td></tr>
+          <tr><td class="td-key">Edge Functions</td><td class="td-note">Optional: X profile sync cron</td></tr>
+        </table>
+        <div class="callout callout-orange" style="margin-top:12px;">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <strong>Use Service Role Key on backend only.</strong>
+            <p>Never expose it to the frontend. Frontend uses public anon key only for Realtime if needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="card">
+        <h3>Quick Start Commands</h3>
+        <pre><span class="cmt"># ── FRONTEND (Vite + React)</span>
+npm create vite@latest tcom-frontend -- --template react
+cd tcom-frontend
+npm install react-router-dom @tanstack/react-query zustand axios tailwindcss dayjs react-hot-toast react-dropzone @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-avatar
+
+<span class="cmt"># ── BACKEND (Express + Heroku)</span>
+mkdir tcom-backend && cd tcom-backend && npm init -y
+npm install express passport passport-oauth2 jsonwebtoken @supabase/supabase-js multer sharp express-rate-limit helmet cors dotenv axios
+npm install -D nodemon
+<span class="cmt"># Add to package.json: "start": "node src/index.js", "dev": "nodemon src/index.js"</span>
+
+<span class="cmt"># ── HEROKU SETUP</span>
+heroku create tcom-backend
+heroku config:set NODE_ENV=production
+git push heroku main
+
+<span class="cmt"># ── VERCEL SETUP</span>
+npm install -g vercel
+cd tcom-frontend && vercel --prod</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 3: PROJECT STRUCTURE ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-blue">📁</div>
+      <h2>Project File Structure</h2>
+      <span class="section-num">03 / 10</span>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="color:var(--muted); font-size:12px; margin-bottom:8px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px;">tcom-frontend/</p>
+        <div class="file-tree">
+<span class="ft-dir">src/</span>
+<div class="ft-indent1"><span class="ft-dir">api/</span></div>
+<div class="ft-indent2"><span class="ft-file">auth.js</span> <span class="ft-comment">— X OAuth helpers</span></div>
+<div class="ft-indent2"><span class="ft-file">communities.js</span> <span class="ft-comment">— community API calls</span></div>
+<div class="ft-indent2"><span class="ft-file">posts.js</span> <span class="ft-comment">— posts/likes/replies</span></div>
+<div class="ft-indent2"><span class="ft-file">users.js</span> <span class="ft-comment">— profile endpoints</span></div>
+<div class="ft-indent1"><span class="ft-dir">components/</span></div>
+<div class="ft-indent2"><span class="ft-dir">auth/</span></div>
+<div class="ft-indent3"><span class="ft-file">LoginWithX.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">AuthGuard.jsx</span></div>
+<div class="ft-indent2"><span class="ft-dir">community/</span></div>
+<div class="ft-indent3"><span class="ft-file">CommunityCard.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">CommunityHeader.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">CommunitySettings.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">MemberList.jsx</span></div>
+<div class="ft-indent2"><span class="ft-dir">posts/</span></div>
+<div class="ft-indent3"><span class="ft-file">PostCard.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">PostComposer.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">LikeButton.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">ReplyThread.jsx</span></div>
+<div class="ft-indent2"><span class="ft-dir">profile/</span></div>
+<div class="ft-indent3"><span class="ft-file">XProfile.jsx</span></div>
+<div class="ft-indent3"><span class="ft-file">FollowerStats.jsx</span></div>
+<div class="ft-indent2"><span class="ft-dir">ui/</span> <span class="ft-comment">— reusable components</span></div>
+<div class="ft-indent1"><span class="ft-dir">pages/</span></div>
+<div class="ft-indent2"><span class="ft-file">Home.jsx</span></div>
+<div class="ft-indent2"><span class="ft-file">Community.jsx</span></div>
+<div class="ft-indent2"><span class="ft-file">CreateCommunity.jsx</span></div>
+<div class="ft-indent2"><span class="ft-file">Profile.jsx</span></div>
+<div class="ft-indent2"><span class="ft-file">AuthCallback.jsx</span></div>
+<div class="ft-indent1"><span class="ft-dir">store/</span></div>
+<div class="ft-indent2"><span class="ft-file">authStore.js</span> <span class="ft-comment">— zustand auth state</span></div>
+<div class="ft-indent1"><span class="ft-dir">hooks/</span></div>
+<div class="ft-indent2"><span class="ft-file">useAuth.js</span></div>
+<div class="ft-indent2"><span class="ft-file">useCommunity.js</span></div>
+<div class="ft-indent1"><span class="ft-file">App.jsx</span></div>
+<div class="ft-indent1"><span class="ft-file">main.jsx</span></div>
+<span class="ft-file">vercel.json</span>
+<span class="ft-file">.env</span>
+        </div>
+      </div>
+      <div>
+        <p style="color:var(--muted); font-size:12px; margin-bottom:8px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px;">tcom-backend/</p>
+        <div class="file-tree">
+<span class="ft-dir">src/</span>
+<div class="ft-indent1"><span class="ft-dir">routes/</span></div>
+<div class="ft-indent2"><span class="ft-file">auth.js</span> <span class="ft-comment">— /auth/x, /auth/callback, /auth/me</span></div>
+<div class="ft-indent2"><span class="ft-file">communities.js</span></div>
+<div class="ft-indent2"><span class="ft-file">posts.js</span></div>
+<div class="ft-indent2"><span class="ft-file">users.js</span></div>
+<div class="ft-indent2"><span class="ft-file">upload.js</span> <span class="ft-comment">— banner/icon uploads</span></div>
+<div class="ft-indent1"><span class="ft-dir">middleware/</span></div>
+<div class="ft-indent2"><span class="ft-file">authenticate.js</span> <span class="ft-comment">— JWT verify middleware</span></div>
+<div class="ft-indent2"><span class="ft-file">requireMod.js</span></div>
+<div class="ft-indent2"><span class="ft-file">requireOwner.js</span></div>
+<div class="ft-indent1"><span class="ft-dir">services/</span></div>
+<div class="ft-indent2"><span class="ft-file">xApi.js</span> <span class="ft-comment">— X API v2 wrapper</span></div>
+<div class="ft-indent2"><span class="ft-file">supabase.js</span> <span class="ft-comment">— DB client singleton</span></div>
+<div class="ft-indent2"><span class="ft-file">storage.js</span> <span class="ft-comment">— Supabase Storage helpers</span></div>
+<div class="ft-indent1"><span class="ft-dir">controllers/</span></div>
+<div class="ft-indent2"><span class="ft-file">authController.js</span></div>
+<div class="ft-indent2"><span class="ft-file">communityController.js</span></div>
+<div class="ft-indent2"><span class="ft-file">postController.js</span></div>
+<div class="ft-indent1"><span class="ft-file">index.js</span> <span class="ft-comment">— Express app entry</span></div>
+<span class="ft-file">Procfile</span> <span class="ft-comment">— web: node src/index.js</span>
+<span class="ft-file">.env</span>
+<span class="ft-file">package.json</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 4: X OAUTH FLOW ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-purple">🐦</div>
+      <h2>X (Twitter) OAuth 2.0 Login Flow</h2>
+      <span class="section-num">04 / 10</span>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">🔑</div>
+      <div class="callout-body">
+        <strong>X Developer Portal Setup Required</strong>
+        <p>Go to <strong>developer.twitter.com</strong> → Create a Project + App → Enable OAuth 2.0 → Set Callback URL to <code>https://tcom-backend.herokuapp.com/auth/x/callback</code> → Request scopes: <code>tweet.read users.read offline.access</code></p>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;">
+      <div class="flow">
+        <div class="flow-box green">User clicks<br/>"Login with X"</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Frontend redirects to<br/><code>/auth/x</code></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box orange">Backend redirects to<br/>X OAuth URL</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">User approves<br/>on X.com</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box blue">X redirects to<br/><code>/auth/x/callback</code></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box purple">Backend fetches<br/>X profile via API</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box green">Upsert user in<br/>Supabase</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box orange">Issue JWT<br/>→ Frontend</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card">
+        <h3>Backend: X OAuth Route (src/routes/auth.js)</h3>
+        <pre><span class="kw">const</span> <span class="var">express</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> <span class="var">axios</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'axios'</span>);
+<span class="kw">const</span> <span class="var">jwt</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
+<span class="kw">const</span> { <span class="var">supabase</span> } <span class="op">=</span> <span class="fn">require</span>(<span class="str">'../services/supabase'</span>);
+<span class="kw">const</span> <span class="var">crypto</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'crypto'</span>);
+
+<span class="cmt">// Step 1: Redirect user to X</span>
+<span class="var">router</span>.<span class="fn">get</span>(<span class="str">'/auth/x'</span>, (req, res) => {
+  <span class="kw">const</span> <span class="var">state</span> <span class="op">=</span> crypto.<span class="fn">randomBytes</span>(<span class="num">16</span>).<span class="fn">toString</span>(<span class="str">'hex'</span>);
+  <span class="kw">const</span> <span class="var">codeVerifier</span> <span class="op">=</span> crypto.<span class="fn">randomBytes</span>(<span class="num">32</span>).<span class="fn">toString</span>(<span class="str">'base64url'</span>);
+  <span class="kw">const</span> <span class="var">codeChallenge</span> <span class="op">=</span> crypto
+    .<span class="fn">createHash</span>(<span class="str">'sha256'</span>).<span class="fn">update</span>(codeVerifier).<span class="fn">digest</span>(<span class="str">'base64url'</span>);
+  req.session.oauthState <span class="op">=</span> state;
+  req.session.codeVerifier <span class="op">=</span> codeVerifier;
+  <span class="kw">const</span> <span class="var">url</span> <span class="op">=</span> <span class="str">`https://twitter.com/i/oauth2/authorize?</span>
+<span class="str">    response_type=code&client_id=${</span><span class="var">process</span>.env.X_CLIENT_ID<span class="str">}</span>
+<span class="str">    &redirect_uri=${</span><span class="var">encodeURIComponent</span>(process.env.X_CALLBACK_URL)<span class="str">}</span>
+<span class="str">    &scope=tweet.read%20users.read%20offline.access</span>
+<span class="str">    &state=${state}&code_challenge=${codeChallenge}</span>
+<span class="str">    &code_challenge_method=S256`</span>;
+  res.<span class="fn">redirect</span>(url);
+});
+
+<span class="cmt">// Step 2: Handle callback from X</span>
+<span class="var">router</span>.<span class="fn">get</span>(<span class="str">'/auth/x/callback'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { code, state } <span class="op">=</span> req.query;
+  <span class="kw">if</span> (state <span class="op">!==</span> req.session.oauthState) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">send</span>(<span class="str">'State mismatch'</span>);
+  <span class="kw">const</span> <span class="var">tokenRes</span> <span class="op">=</span> <span class="kw">await</span> axios.<span class="fn">post</span>(<span class="str">'https://api.twitter.com/2/oauth2/token'</span>, {
+    code, grant_type: <span class="str">'authorization_code'</span>,
+    client_id: process.env.X_CLIENT_ID,
+    redirect_uri: process.env.X_CALLBACK_URL,
+    code_verifier: req.session.codeVerifier,
+  }, { auth: { username: process.env.X_CLIENT_ID, password: process.env.X_CLIENT_SECRET } });
+  <span class="kw">const</span> <span class="var">xToken</span> <span class="op">=</span> tokenRes.data.access_token;
+  <span class="cmt">// Fetch profile from X API v2</span>
+  <span class="kw">const</span> <span class="var">meRes</span> <span class="op">=</span> <span class="kw">await</span> axios.<span class="fn">get</span>(
+    <span class="str">'https://api.twitter.com/2/users/me?user.fields=profile_image_url,description,public_metrics,name'</span>,
+    { headers: { Authorization: <span class="str">`Bearer ${xToken}`</span> } }
+  );
+  <span class="kw">const</span> <span class="var">xUser</span> <span class="op">=</span> meRes.data.data;
+  <span class="cmt">// Upsert into Supabase users table</span>
+  <span class="kw">const</span> { data: <span class="var">user</span> } <span class="op">=</span> <span class="kw">await</span> supabase.<span class="fn">from</span>(<span class="str">'users'</span>).<span class="fn">upsert</span>({
+    x_id: xUser.id, username: xUser.username,
+    display_name: xUser.name, bio: xUser.description,
+    avatar_url: xUser.profile_image_url.<span class="fn">replace</span>(<span class="str">'_normal'</span>, <span class="str">'_400x400'</span>),
+    followers_count: xUser.public_metrics.followers_count,
+    following_count: xUser.public_metrics.following_count,
+    x_access_token: xToken, x_refresh_token: tokenRes.data.refresh_token,
+  }, { onConflict: <span class="str">'x_id'</span> }).<span class="fn">select</span>().<span class="fn">single</span>();
+  <span class="kw">const</span> <span class="var">jwtToken</span> <span class="op">=</span> jwt.<span class="fn">sign</span>({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: <span class="str">'30d'</span> });
+  res.<span class="fn">redirect</span>(<span class="str">`${process.env.FRONTEND_URL}/auth/callback?token=${jwtToken}`</span>);
+});</pre>
+      </div>
+      <div class="card">
+        <h3 class="blue">Frontend: Auth Callback Page</h3>
+        <pre><span class="cmt">// pages/AuthCallback.jsx</span>
+<span class="kw">import</span> { useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { useNavigate } <span class="kw">from</span> <span class="str">'react-router-dom'</span>;
+<span class="kw">import</span> { <span class="fn">useAuthStore</span> } <span class="kw">from</span> <span class="str">'../store/authStore'</span>;
+
+<span class="kw">export default function</span> <span class="fn">AuthCallback</span>() {
+  <span class="kw">const</span> <span class="var">navigate</span> <span class="op">=</span> <span class="fn">useNavigate</span>();
+  <span class="kw">const</span> <span class="var">setAuth</span> <span class="op">=</span> <span class="fn">useAuthStore</span>(s => s.setAuth);
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> <span class="var">params</span> <span class="op">=</span> <span class="kw">new</span> <span class="fn">URLSearchParams</span>(window.location.search);
+    <span class="kw">const</span> <span class="var">token</span> <span class="op">=</span> params.<span class="fn">get</span>(<span class="str">'token'</span>);
+    <span class="kw">if</span> (token) {
+      localStorage.<span class="fn">setItem</span>(<span class="str">'tcom_token'</span>, token);
+      <span class="fn">fetchMe</span>(token);
+    }
+  }, []);
+
+  <span class="kw">async function</span> <span class="fn">fetchMe</span>(token) {
+    <span class="kw">const</span> <span class="var">res</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`${import.meta.env.VITE_API_URL}/auth/me`</span>, {
+      headers: { Authorization: <span class="str">`Bearer ${token}`</span> }
+    });
+    <span class="kw">const</span> <span class="var">user</span> <span class="op">=</span> <span class="kw">await</span> res.<span class="fn">json</span>();
+    <span class="fn">setAuth</span>({ user, token });
+    <span class="fn">navigate</span>(<span class="str">'/'</span>);
+  }
+
+  <span class="kw">return</span> <span class="op">&lt;</span>div<span class="op">&gt;</span>Logging you in...<span class="op">&lt;/</span>div<span class="op">&gt;</span>;
+}
+
+<span class="cmt">// store/authStore.js (Zustand)</span>
+<span class="kw">import</span> { create } <span class="kw">from</span> <span class="str">'zustand'</span>;
+<span class="kw">export const</span> <span class="fn">useAuthStore</span> <span class="op">=</span> <span class="fn">create</span>(set => ({
+  user: <span class="kw">null</span>, token: <span class="kw">null</span>,
+  <span class="fn">setAuth</span>: ({ user, token }) => <span class="fn">set</span>({ user, token }),
+  <span class="fn">logout</span>: () => {
+    localStorage.<span class="fn">removeItem</span>(<span class="str">'tcom_token'</span>);
+    <span class="fn">set</span>({ user: <span class="kw">null</span>, token: <span class="kw">null</span> });
+  },
+}));</pre>
+      </div>
+    </div>
+
+    <div class="callout callout-red" style="margin-top:14px;">
+      <div class="callout-icon">🔒</div>
+      <div class="callout-body">
+        <strong>X API Rate Limits — Sync Wisely</strong>
+        <p>X API v2 free tier limits are strict. Cache the X profile in Supabase and only re-sync when the user logs in fresh or explicitly hits "Refresh Profile". Do NOT call <code>/2/users/me</code> on every page load.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 5: DATABASE SCHEMA ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-green">🗄️</div>
+      <h2>Supabase Database Schema</h2>
+      <span class="section-num">05 / 10</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>users table</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-key">id</td><td class="td-type">uuid PK</td><td class="td-note">gen_random_uuid()</td></tr>
+            <tr><td class="td-key">x_id</td><td class="td-type">text UNIQUE</td><td class="td-note">X user ID string</td></tr>
+            <tr><td class="td-key">username</td><td class="td-type">text</td><td class="td-note">X handle (no @)</td></tr>
+            <tr><td class="td-key">display_name</td><td class="td-type">text</td><td class="td-note">X display name</td></tr>
+            <tr><td class="td-key">avatar_url</td><td class="td-type">text</td><td class="td-note">X profile image URL (_400x400)</td></tr>
+            <tr><td class="td-key">bio</td><td class="td-type">text</td><td class="td-note">X bio / description</td></tr>
+            <tr><td class="td-key">followers_count</td><td class="td-type">int4</td><td class="td-note">From X public_metrics</td></tr>
+            <tr><td class="td-key">following_count</td><td class="td-type">int4</td><td class="td-note">From X public_metrics</td></tr>
+            <tr><td class="td-key">x_access_token</td><td class="td-type">text</td><td class="td-note">Encrypted, for API calls</td></tr>
+            <tr><td class="td-key">x_refresh_token</td><td class="td-type">text</td><td class="td-note">Refresh when expired</td></tr>
+            <tr><td class="td-key">created_at</td><td class="td-type">timestamptz</td><td class="td-note">DEFAULT now()</td></tr>
+            <tr><td class="td-key">last_x_sync</td><td class="td-type">timestamptz</td><td class="td-note">Last profile sync time</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="orange">communities table</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-key">id</td><td class="td-type">uuid PK</td><td class="td-note">gen_random_uuid()</td></tr>
+            <tr><td class="td-key">slug</td><td class="td-type">text UNIQUE</td><td class="td-note">URL-safe, e.g. "bitcoin-traders"</td></tr>
+            <tr><td class="td-key">name</td><td class="td-type">text NOT NULL</td><td class="td-note">Display name</td></tr>
+            <tr><td class="td-key">description</td><td class="td-type">text</td><td class="td-note">Markdown supported</td></tr>
+            <tr><td class="td-key">banner_url</td><td class="td-type">text</td><td class="td-note">Supabase Storage URL</td></tr>
+            <tr><td class="td-key">icon_url</td><td class="td-type">text</td><td class="td-note">Supabase Storage URL</td></tr>
+            <tr><td class="td-key">owner_id</td><td class="td-type">uuid FK → users</td><td class="td-note">Community creator</td></tr>
+            <tr><td class="td-key">visibility</td><td class="td-type">text</td><td class="td-note">'public' | 'private' | 'invite'</td></tr>
+            <tr><td class="td-key">member_count</td><td class="td-type">int4</td><td class="td-note">Denormalized counter</td></tr>
+            <tr><td class="td-key">post_count</td><td class="td-type">int4</td><td class="td-note">Denormalized counter</td></tr>
+            <tr><td class="td-key">tags</td><td class="td-type">text[]</td><td class="td-note">e.g. ['defi', 'memes']</td></tr>
+            <tr><td class="td-key">created_at</td><td class="td-type">timestamptz</td><td class="td-note">DEFAULT now()</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="blue">community_members table</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-key">id</td><td class="td-type">uuid PK</td><td class="td-note"></td></tr>
+            <tr><td class="td-key">community_id</td><td class="td-type">uuid FK</td><td class="td-note">→ communities</td></tr>
+            <tr><td class="td-key">user_id</td><td class="td-type">uuid FK</td><td class="td-note">→ users</td></tr>
+            <tr><td class="td-key">role</td><td class="td-type">text</td><td class="td-note">'member' | 'moderator' | 'owner'</td></tr>
+            <tr><td class="td-key">joined_at</td><td class="td-type">timestamptz</td><td class="td-note">DEFAULT now()</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;"><strong>Index:</strong> <code>UNIQUE(community_id, user_id)</code></p>
+      </div>
+      <div class="card">
+        <h3 class="purple">posts table</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-key">id</td><td class="td-type">uuid PK</td><td class="td-note"></td></tr>
+            <tr><td class="td-key">community_id</td><td class="td-type">uuid FK</td><td class="td-note">→ communities</td></tr>
+            <tr><td class="td-key">author_id</td><td class="td-type">uuid FK</td><td class="td-note">→ users</td></tr>
+            <tr><td class="td-key">parent_post_id</td><td class="td-type">uuid FK NULLABLE</td><td class="td-note">NULL = top-level, else reply</td></tr>
+            <tr><td class="td-key">content</td><td class="td-type">text NOT NULL</td><td class="td-note">Post body (max 500 chars)</td></tr>
+            <tr><td class="td-key">media_urls</td><td class="td-type">text[]</td><td class="td-note">Image/video URLs</td></tr>
+            <tr><td class="td-key">like_count</td><td class="td-type">int4</td><td class="td-note">Denormalized</td></tr>
+            <tr><td class="td-key">reply_count</td><td class="td-type">int4</td><td class="td-note">Denormalized</td></tr>
+            <tr><td class="td-key">is_pinned</td><td class="td-type">bool</td><td class="td-note">Mod can pin</td></tr>
+            <tr><td class="td-key">created_at</td><td class="td-type">timestamptz</td><td class="td-note"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>post_likes table</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-key">id</td><td class="td-type">uuid PK</td><td class="td-note"></td></tr>
+            <tr><td class="td-key">post_id</td><td class="td-type">uuid FK</td><td class="td-note">→ posts</td></tr>
+            <tr><td class="td-key">user_id</td><td class="td-type">uuid FK</td><td class="td-note">→ users</td></tr>
+            <tr><td class="td-key">created_at</td><td class="td-type">timestamptz</td><td class="td-note"></td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;"><strong>Index:</strong> <code>UNIQUE(post_id, user_id)</code></p>
+      </div>
+      <div class="card">
+        <h3 class="orange">community_invites table</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-key">id</td><td class="td-type">uuid PK</td><td class="td-note">also the invite token</td></tr>
+            <tr><td class="td-key">community_id</td><td class="td-type">uuid FK</td><td class="td-note"></td></tr>
+            <tr><td class="td-key">created_by</td><td class="td-type">uuid FK</td><td class="td-note">→ users</td></tr>
+            <tr><td class="td-key">max_uses</td><td class="td-type">int4</td><td class="td-note">NULL = unlimited</td></tr>
+            <tr><td class="td-key">use_count</td><td class="td-type">int4</td><td class="td-note">DEFAULT 0</td></tr>
+            <tr><td class="td-key">expires_at</td><td class="td-type">timestamptz</td><td class="td-note">NULL = never</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="card">
+        <h3>Supabase SQL — Create Tables</h3>
+        <pre><span class="cmt">-- Run in Supabase SQL editor</span>
+
+<span class="kw">CREATE TABLE</span> <span class="fn">users</span> (
+  id <span class="typ">uuid</span> PRIMARY KEY DEFAULT gen_random_uuid(),
+  x_id <span class="typ">text</span> UNIQUE NOT NULL,
+  username <span class="typ">text</span> NOT NULL,
+  display_name <span class="typ">text</span>,
+  avatar_url <span class="typ">text</span>,
+  bio <span class="typ">text</span>,
+  followers_count <span class="typ">int</span> DEFAULT <span class="num">0</span>,
+  following_count <span class="typ">int</span> DEFAULT <span class="num">0</span>,
+  x_access_token <span class="typ">text</span>,
+  x_refresh_token <span class="typ">text</span>,
+  last_x_sync <span class="typ">timestamptz</span>,
+  created_at <span class="typ">timestamptz</span> DEFAULT now()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="fn">communities</span> (
+  id <span class="typ">uuid</span> PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug <span class="typ">text</span> UNIQUE NOT NULL,
+  name <span class="typ">text</span> NOT NULL,
+  description <span class="typ">text</span>,
+  banner_url <span class="typ">text</span>,
+  icon_url <span class="typ">text</span>,
+  owner_id <span class="typ">uuid</span> REFERENCES users(id) ON DELETE SET NULL,
+  visibility <span class="typ">text</span> DEFAULT <span class="str">'public'</span> CHECK (visibility IN (<span class="str">'public'</span>,<span class="str">'private'</span>,<span class="str">'invite'</span>)),
+  member_count <span class="typ">int</span> DEFAULT <span class="num">0</span>,
+  post_count <span class="typ">int</span> DEFAULT <span class="num">0</span>,
+  tags <span class="typ">text[]</span> DEFAULT <span class="str">'{}'</span>,
+  created_at <span class="typ">timestamptz</span> DEFAULT now()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="fn">community_members</span> (
+  id <span class="typ">uuid</span> PRIMARY KEY DEFAULT gen_random_uuid(),
+  community_id <span class="typ">uuid</span> REFERENCES communities(id) ON DELETE CASCADE,
+  user_id <span class="typ">uuid</span> REFERENCES users(id) ON DELETE CASCADE,
+  role <span class="typ">text</span> DEFAULT <span class="str">'member'</span> CHECK (role IN (<span class="str">'member'</span>,<span class="str">'moderator'</span>,<span class="str">'owner'</span>)),
+  joined_at <span class="typ">timestamptz</span> DEFAULT now(),
+  UNIQUE(community_id, user_id)
+);
+
+<span class="kw">CREATE TABLE</span> <span class="fn">posts</span> (
+  id <span class="typ">uuid</span> PRIMARY KEY DEFAULT gen_random_uuid(),
+  community_id <span class="typ">uuid</span> REFERENCES communities(id) ON DELETE CASCADE,
+  author_id <span class="typ">uuid</span> REFERENCES users(id) ON DELETE SET NULL,
+  parent_post_id <span class="typ">uuid</span> REFERENCES posts(id) ON DELETE CASCADE,
+  content <span class="typ">text</span> NOT NULL CHECK (char_length(content) <= <span class="num">500</span>),
+  media_urls <span class="typ">text[]</span> DEFAULT <span class="str">'{}'</span>,
+  like_count <span class="typ">int</span> DEFAULT <span class="num">0</span>,
+  reply_count <span class="typ">int</span> DEFAULT <span class="num">0</span>,
+  is_pinned <span class="typ">bool</span> DEFAULT <span class="kw">false</span>,
+  created_at <span class="typ">timestamptz</span> DEFAULT now()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="fn">post_likes</span> (
+  id <span class="typ">uuid</span> PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id <span class="typ">uuid</span> REFERENCES posts(id) ON DELETE CASCADE,
+  user_id <span class="typ">uuid</span> REFERENCES users(id) ON DELETE CASCADE,
+  created_at <span class="typ">timestamptz</span> DEFAULT now(),
+  UNIQUE(post_id, user_id)
+);</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 6: API ENDPOINTS ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-orange">🔌</div>
+      <h2>Backend API Endpoints</h2>
+      <span class="section-num">06 / 10</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Auth &amp; User</h3>
+        <table>
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/auth/x</td><td class="td-note">Redirect to X OAuth</td></tr>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/auth/x/callback</td><td class="td-note">Handle X callback, issue JWT</td></tr>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/auth/me</td><td class="td-note">🔒 Get current user + X stats</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/auth/logout</td><td class="td-note">🔒 Invalidate token</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/auth/refresh-profile</td><td class="td-note">🔒 Re-sync profile from X API</td></tr>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/users/:username</td><td class="td-note">Public profile by X handle</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="orange">Communities</h3>
+        <table>
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/communities</td><td class="td-note">List public communities (paginated)</td></tr>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/communities/:slug</td><td class="td-note">Get community details</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/communities</td><td class="td-note">🔒 Create community</td></tr>
+            <tr><td class="td-method method-patch">PATCH</td><td class="td-key">/communities/:slug</td><td class="td-note">🔒👑 Update (owner only)</td></tr>
+            <tr><td class="td-method method-delete">DELETE</td><td class="td-key">/communities/:slug</td><td class="td-note">🔒👑 Delete (owner only)</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/communities/:slug/join</td><td class="td-note">🔒 Join community</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/communities/:slug/leave</td><td class="td-note">🔒 Leave community</td></tr>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/communities/:slug/members</td><td class="td-note">List members + roles</td></tr>
+            <tr><td class="td-method method-put">PUT</td><td class="td-key">/communities/:slug/moderators</td><td class="td-note">🔒👑 Grant/revoke mod</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/communities/:slug/banner</td><td class="td-note">🔒👑 Upload banner image</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/communities/:slug/icon</td><td class="td-note">🔒👑 Upload icon image</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="blue">Posts &amp; Replies</h3>
+        <table>
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/communities/:slug/posts</td><td class="td-note">Paginated posts feed</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/communities/:slug/posts</td><td class="td-note">🔒 Create post</td></tr>
+            <tr><td class="td-method method-get">GET</td><td class="td-key">/posts/:id</td><td class="td-note">Single post + replies</td></tr>
+            <tr><td class="td-method method-delete">DELETE</td><td class="td-key">/posts/:id</td><td class="td-note">🔒 Author or mod</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/posts/:id/reply</td><td class="td-note">🔒 Reply to post</td></tr>
+            <tr><td class="td-method method-post">POST</td><td class="td-key">/posts/:id/like</td><td class="td-note">🔒 Toggle like</td></tr>
+            <tr><td class="td-method method-put">PUT</td><td class="td-key">/posts/:id/pin</td><td class="td-note">🔒🛡️ Mod pin post</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px; color:var(--muted); font-size:12px;">🔒 = auth required &nbsp; 👑 = owner only &nbsp; 🛡️ = mod+</p>
+      </div>
+      <div class="card">
+        <h3 class="purple">Express App Setup (src/index.js)</h3>
+        <pre><span class="kw">const</span> <span class="var">express</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> <span class="var">cors</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'cors'</span>);
+<span class="kw">const</span> <span class="var">helmet</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'helmet'</span>);
+<span class="kw">const</span> <span class="var">rateLimit</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">'express-rate-limit'</span>);
+<span class="fn">require</span>(<span class="str">'dotenv'</span>).<span class="fn">config</span>();
+
+<span class="kw">const</span> <span class="var">app</span> <span class="op">=</span> <span class="fn">express</span>();
+app.<span class="fn">use</span>(<span class="fn">helmet</span>());
+app.<span class="fn">use</span>(<span class="fn">cors</span>({
+  origin: process.env.FRONTEND_URL,
+  credentials: <span class="kw">true</span>
+}));
+app.<span class="fn">use</span>(express.<span class="fn">json</span>({ limit: <span class="str">'5mb'</span> }));
+app.<span class="fn">use</span>(<span class="fn">rateLimit</span>({ windowMs: <span class="num">15</span> * <span class="num">60</span> * <span class="num">1000</span>, max: <span class="num">200</span> }));
+
+app.<span class="fn">use</span>(<span class="str">'/auth'</span>, <span class="fn">require</span>(<span class="str">'./routes/auth'</span>));
+app.<span class="fn">use</span>(<span class="str">'/communities'</span>, <span class="fn">require</span>(<span class="str">'./routes/communities'</span>));
+app.<span class="fn">use</span>(<span class="str">'/posts'</span>, <span class="fn">require</span>(<span class="str">'./routes/posts'</span>));
+app.<span class="fn">use</span>(<span class="str">'/users'</span>, <span class="fn">require</span>(<span class="str">'./routes/users'</span>));
+
+app.<span class="fn">listen</span>(process.env.PORT || <span class="num">4000</span>);</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 7: KEY COMPONENTS ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-blue">⚛️</div>
+      <h2>Key Frontend Components</h2>
+      <span class="section-num">07 / 10</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Community Feed Page (pages/Community.jsx)</h3>
+        <pre><span class="cmt">// Route: /c/:slug</span>
+<span class="kw">import</span> { useParams } <span class="kw">from</span> <span class="str">'react-router-dom'</span>;
+<span class="kw">import</span> { useQuery, useMutation, useQueryClient } <span class="kw">from</span> <span class="str">'@tanstack/react-query'</span>;
+<span class="kw">import</span> { <span class="var">api</span> } <span class="kw">from</span> <span class="str">'../api'</span>;
+
+<span class="kw">export default function</span> <span class="fn">Community</span>() {
+  <span class="kw">const</span> { slug } <span class="op">=</span> <span class="fn">useParams</span>();
+  <span class="kw">const</span> <span class="var">qc</span> <span class="op">=</span> <span class="fn">useQueryClient</span>();
+
+  <span class="kw">const</span> { data: community } <span class="op">=</span> <span class="fn">useQuery</span>({
+    queryKey: [<span class="str">'community'</span>, slug],
+    queryFn: () => api.<span class="fn">get</span>(<span class="str">`/communities/${slug}`</span>).<span class="fn">then</span>(r => r.data),
+  });
+
+  <span class="kw">const</span> { data: posts } <span class="op">=</span> <span class="fn">useQuery</span>({
+    queryKey: [<span class="str">'posts'</span>, slug],
+    queryFn: () => api.<span class="fn">get</span>(<span class="str">`/communities/${slug}/posts`</span>).<span class="fn">then</span>(r => r.data),
+  });
+
+  <span class="kw">const</span> <span class="var">joinMutation</span> <span class="op">=</span> <span class="fn">useMutation</span>({
+    mutationFn: () => api.<span class="fn">post</span>(<span class="str">`/communities/${slug}/join`</span>),
+    onSuccess: () => qc.<span class="fn">invalidateQueries</span>([<span class="str">'community'</span>, slug]),
+  });
+
+  <span class="kw">return</span> (
+    <span class="op">&lt;</span>div<span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="fn">CommunityHeader</span> community={community} onJoin={joinMutation.mutate} <span class="op">/&gt;</span>
+      <span class="op">&lt;</span><span class="fn">PostComposer</span> communitySlug={slug} <span class="op">/&gt;</span>
+      {posts?.map(post => (
+        <span class="op">&lt;</span><span class="fn">PostCard</span> key={post.id} post={post} <span class="op">/&gt;</span>
+      ))}
+    <span class="op">&lt;/</span>div<span class="op">&gt;</span>
+  );
+}</pre>
+      </div>
+      <div class="card">
+        <h3 class="orange">Like Button w/ Optimistic Update</h3>
+        <pre><span class="cmt">// components/posts/LikeButton.jsx</span>
+<span class="kw">import</span> { useMutation, useQueryClient } <span class="kw">from</span> <span class="str">'@tanstack/react-query'</span>;
+<span class="kw">import</span> { <span class="var">api</span> } <span class="kw">from</span> <span class="str">'../../api'</span>;
+
+<span class="kw">export function</span> <span class="fn">LikeButton</span>({ post, communitySlug }) {
+  <span class="kw">const</span> <span class="var">qc</span> <span class="op">=</span> <span class="fn">useQueryClient</span>();
+
+  <span class="kw">const</span> <span class="var">likeMutation</span> <span class="op">=</span> <span class="fn">useMutation</span>({
+    mutationFn: () => api.<span class="fn">post</span>(<span class="str">`/posts/${post.id}/like`</span>),
+    <span class="cmt">// Optimistic update</span>
+    onMutate: <span class="kw">async</span> () => {
+      <span class="kw">await</span> qc.<span class="fn">cancelQueries</span>([<span class="str">'posts'</span>, communitySlug]);
+      <span class="kw">const</span> <span class="var">prev</span> <span class="op">=</span> qc.<span class="fn">getQueryData</span>([<span class="str">'posts'</span>, communitySlug]);
+      qc.<span class="fn">setQueryData</span>([<span class="str">'posts'</span>, communitySlug], old =>
+        old.map(p => p.id <span class="op">===</span> post.id
+          ? { ...p, like_count: p.liked ? p.like_count-<span class="num">1</span> : p.like_count+<span class="num">1</span>, liked: !p.liked }
+          : p)
+      );
+      <span class="kw">return</span> { prev };
+    },
+    onError: (err, _, ctx) => qc.<span class="fn">setQueryData</span>([<span class="str">'posts'</span>, communitySlug], ctx.prev),
+    onSettled: () => qc.<span class="fn">invalidateQueries</span>([<span class="str">'posts'</span>, communitySlug]),
+  });
+
+  <span class="kw">return</span> (
+    <span class="op">&lt;</span>button onClick={likeMutation.mutate} className={post.liked ? <span class="str">'liked'</span> : <span class="str">''</span>}<span class="op">&gt;</span>
+      ♥ {post.like_count}
+    <span class="op">&lt;/</span>button<span class="op">&gt;</span>
+  );
+}</pre>
+      </div>
+      <div class="card">
+        <h3 class="blue">Community Settings (Creator Panel)</h3>
+        <pre><span class="cmt">// components/community/CommunitySettings.jsx</span>
+<span class="cmt">// Handles: name, description, banner, icon, visibility, moderators</span>
+
+<span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { useDropzone } <span class="kw">from</span> <span class="str">'react-dropzone'</span>;
+
+<span class="kw">export function</span> <span class="fn">CommunitySettings</span>({ community }) {
+  <span class="kw">const</span> [form, setForm] <span class="op">=</span> <span class="fn">useState</span>({
+    name: community.name,
+    description: community.description,
+    visibility: community.visibility,
+  });
+
+  <span class="kw">const</span> { getRootProps: <span class="var">bannerProps</span>, getInputProps: <span class="var">bannerInput</span> } <span class="op">=</span> <span class="fn">useDropzone</span>({
+    accept: { <span class="str">'image/*'</span>: [] }, maxFiles: <span class="num">1</span>,
+    onDrop: files => <span class="fn">uploadBanner</span>(files[<span class="num">0</span>], community.slug),
+  });
+
+  <span class="kw">const</span> { getRootProps: <span class="var">iconProps</span>, getInputProps: <span class="var">iconInput</span> } <span class="op">=</span> <span class="fn">useDropzone</span>({
+    accept: { <span class="str">'image/*'</span>: [] }, maxFiles: <span class="num">1</span>,
+    onDrop: files => <span class="fn">uploadIcon</span>(files[<span class="num">0</span>], community.slug),
+  });
+
+  <span class="kw">return</span> (
+    <span class="op">&lt;</span>form onSubmit={handleSave}<span class="op">&gt;</span>
+      <span class="op">&lt;</span>div {...bannerProps()}<span class="op">&gt;</span><span class="op">&lt;</span>input {...bannerInput()} <span class="op">/&gt;</span> Drop banner here<span class="op">&lt;/</span>div<span class="op">&gt;</span>
+      <span class="op">&lt;</span>div {...iconProps()}<span class="op">&gt;</span><span class="op">&lt;</span>input {...iconInput()} <span class="op">/&gt;</span> Drop icon here<span class="op">&lt;/</span>div<span class="op">&gt;</span>
+      <span class="op">&lt;</span>input value={form.name} onChange={e => <span class="fn">setForm</span>({...form, name: e.target.value})} <span class="op">/&gt;</span>
+      <span class="op">&lt;</span>textarea value={form.description} onChange={...} <span class="op">/&gt;</span>
+      <span class="op">&lt;</span>select value={form.visibility} onChange={...}<span class="op">&gt;</span>
+        <span class="op">&lt;</span>option value=<span class="str">"public"</span><span class="op">&gt;</span>Public<span class="op">&lt;/</span>option<span class="op">&gt;</span>
+        <span class="op">&lt;</span>option value=<span class="str">"private"</span><span class="op">&gt;</span>Private<span class="op">&lt;/</span>option<span class="op">&gt;</span>
+      <span class="op">&lt;/</span>select<span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="fn">ModeratorManager</span> communitySlug={community.slug} <span class="op">/&gt;</span>
+      <span class="op">&lt;</span>button type=<span class="str">"submit"</span><span class="op">&gt;</span>Save Changes<span class="op">&lt;/</span>button<span class="op">&gt;</span>
+    <span class="op">&lt;/</span>form<span class="op">&gt;</span>
+  );
+}</pre>
+      </div>
+      <div class="card">
+        <h3 class="purple">X Profile Display Component</h3>
+        <pre><span class="cmt">// components/profile/XProfile.jsx</span>
+<span class="cmt">// Show synced X profile data: avatar, handle, bio, stats</span>
+
+<span class="kw">export function</span> <span class="fn">XProfile</span>({ user }) {
+  <span class="kw">return</span> (
+    <span class="op">&lt;</span>div className=<span class="str">"profile"</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span>img
+        src={user.avatar_url}
+        alt={user.display_name}
+        className=<span class="str">"avatar"</span>
+      <span class="op">/&gt;</span>
+      <span class="op">&lt;</span>div<span class="op">&gt;</span>
+        <span class="op">&lt;</span>h2<span class="op">&gt;</span>{user.display_name}<span class="op">&lt;/</span>h2<span class="op">&gt;</span>
+        <span class="op">&lt;</span>span className=<span class="str">"handle"</span><span class="op">&gt;</span>@{user.username}<span class="op">&lt;/</span>span<span class="op">&gt;</span>
+        <span class="op">&lt;</span>p className=<span class="str">"bio"</span><span class="op">&gt;</span>{user.bio}<span class="op">&lt;/</span>p<span class="op">&gt;</span>
+        <span class="op">&lt;</span>div className=<span class="str">"stats"</span><span class="op">&gt;</span>
+          <span class="op">&lt;</span>span<span class="op">&gt;</span>
+            <span class="op">&lt;</span>strong<span class="op">&gt;</span>{<span class="fn">formatCount</span>(user.following_count)}<span class="op">&lt;/</span>strong<span class="op">&gt;</span> Following
+          <span class="op">&lt;/</span>span<span class="op">&gt;</span>
+          <span class="op">&lt;</span>span<span class="op">&gt;</span>
+            <span class="op">&lt;</span>strong<span class="op">&gt;</span>{<span class="fn">formatCount</span>(user.followers_count)}<span class="op">&lt;/</span>strong<span class="op">&gt;</span> Followers
+          <span class="op">&lt;/</span>span<span class="op">&gt;</span>
+        <span class="op">&lt;/</span>div<span class="op">&gt;</span>
+      <span class="op">&lt;/</span>div<span class="op">&gt;</span>
+    <span class="op">&lt;/</span>div<span class="op">&gt;</span>
+  );
+}
+
+<span class="kw">function</span> <span class="fn">formatCount</span>(n) {
+  <span class="kw">if</span> (n >= <span class="num">1_000_000</span>) <span class="kw">return</span> (n/<span class="num">1_000_000</span>).<span class="fn">toFixed</span>(<span class="num">1</span>) + <span class="str">'M'</span>;
+  <span class="kw">if</span> (n >= <span class="num">1_000</span>) <span class="kw">return</span> (n/<span class="num">1_000</span>).<span class="fn">toFixed</span>(<span class="num">1</span>) + <span class="str">'K'</span>;
+  <span class="kw">return</span> n;
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 8: ENV VARIABLES ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-red">🔐</div>
+      <h2>Environment Variables</h2>
+      <span class="section-num">08 / 10</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Backend .env (Heroku Config Vars)</h3>
+        <div class="env-block">
+<span class="env-section"># ── X (Twitter) API</span>
+<span class="env-key">X_CLIENT_ID</span>=<span class="env-val">your_x_client_id</span>
+<span class="env-key">X_CLIENT_SECRET</span>=<span class="env-val">your_x_client_secret</span>
+<span class="env-key">X_CALLBACK_URL</span>=<span class="env-val">https://tcom-backend.herokuapp.com/auth/x/callback</span>
+
+<span class="env-section"># ── JWT</span>
+<span class="env-key">JWT_SECRET</span>=<span class="env-val">your_long_random_secret_min_64_chars</span>
+
+<span class="env-section"># ── Supabase</span>
+<span class="env-key">SUPABASE_URL</span>=<span class="env-val">https://xxxx.supabase.co</span>
+<span class="env-key">SUPABASE_SERVICE_KEY</span>=<span class="env-val">eyJhbGciOiJIUzI1NiIs...</span>
+
+<span class="env-section"># ── App</span>
+<span class="env-key">FRONTEND_URL</span>=<span class="env-val">https://tcom.vercel.app</span>
+<span class="env-key">NODE_ENV</span>=<span class="env-val">production</span>
+<span class="env-key">PORT</span>=<span class="env-val">4000</span>
+
+<span class="env-section"># ── Sessions (for OAuth PKCE state)</span>
+<span class="env-key">SESSION_SECRET</span>=<span class="env-val">another_long_random_secret</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="orange">Frontend .env (Vercel Env)</h3>
+        <div class="env-block">
+<span class="env-section"># ── API</span>
+<span class="env-key">VITE_API_URL</span>=<span class="env-val">https://tcom-backend.herokuapp.com</span>
+
+<span class="env-section"># ── Supabase (public anon, read-only)</span>
+<span class="env-key">VITE_SUPABASE_URL</span>=<span class="env-val">https://xxxx.supabase.co</span>
+<span class="env-key">VITE_SUPABASE_ANON_KEY</span>=<span class="env-val">eyJhbGciOiJIUzI1NiIs...</span>
+<span class="env-cmt"># Only needed if using Supabase Realtime on frontend</span>
+
+<span class="env-section"># ── App</span>
+<span class="env-key">VITE_APP_NAME</span>=<span class="env-val">TCOM</span>
+<span class="env-key">VITE_APP_URL</span>=<span class="env-val">https://tcom.vercel.app</span>
+        </div>
+        <div class="callout callout-red" style="margin-top:12px;">
+          <div class="callout-icon">🚨</div>
+          <div class="callout-body">
+            <strong>NEVER put SUPABASE_SERVICE_KEY in frontend.</strong>
+            <p>Service key bypasses all RLS. It belongs only on the Heroku backend in config vars.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 9: DEPLOYMENT ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-green">🚀</div>
+      <h2>Deployment Configuration</h2>
+      <span class="section-num">09 / 10</span>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <h3>Vercel (Frontend)</h3>
+        <pre><span class="cmt">// vercel.json</span>
+{
+  <span class="key">"rewrites"</span>: [
+    {
+      <span class="key">"source"</span>: <span class="str">"/((?!api/.*).*)"</span>,
+      <span class="key">"destination"</span>: <span class="str">"/index.html"</span>
+    }
+  ],
+  <span class="key">"headers"</span>: [
+    {
+      <span class="key">"source"</span>: <span class="str">"/(.*)"</span>,
+      <span class="key">"headers"</span>: [
+        { <span class="key">"key"</span>: <span class="str">"X-Frame-Options"</span>, <span class="key">"value"</span>: <span class="str">"DENY"</span> },
+        { <span class="key">"key"</span>: <span class="str">"X-Content-Type-Options"</span>, <span class="key">"value"</span>: <span class="str">"nosniff"</span> }
+      ]
+    }
+  ]
+}</pre>
+        <div class="steps" style="margin-top:12px;">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body"><h4>Connect GitHub to Vercel</h4><p>Push frontend to GitHub, import repo in Vercel dashboard</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body"><h4>Set Env Vars</h4><p>Add all <code>VITE_*</code> vars in Vercel project settings → Environment Variables</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body"><h4>Auto-deploy</h4><p>Every push to main auto-deploys. Preview deploys on PRs.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="orange">Heroku (Backend)</h3>
+        <pre><span class="cmt"># Procfile (root of tcom-backend)</span>
+web: node src/index.js
+
+<span class="cmt"># package.json engines</span>
+<span class="str">"engines"</span>: {
+  <span class="str">"node"</span>: <span class="str">"20.x"</span>
+}
+
+<span class="cmt"># Deploy commands</span>
+heroku create tcom-backend
+heroku addons:create heroku-redis:mini
+git push heroku main
+
+<span class="cmt"># Set all env vars</span>
+heroku config:set X_CLIENT_ID=xxx
+heroku config:set X_CLIENT_SECRET=xxx
+heroku config:set JWT_SECRET=xxx
+heroku config:set SUPABASE_URL=xxx
+heroku config:set SUPABASE_SERVICE_KEY=xxx
+heroku config:set FRONTEND_URL=https://tcom.vercel.app
+heroku config:set SESSION_SECRET=xxx
+
+<span class="cmt"># Scale up</span>
+heroku ps:scale web=1</pre>
+        <div class="callout callout-orange" style="margin-top:10px;">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>Add express-session for OAuth PKCE state</strong>
+            <p>Use <code>connect-redis</code> with Heroku Redis addon to persist sessions across dyno restarts.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="blue">Supabase Storage Buckets</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num blue">1</div>
+            <div class="step-body"><h4>Create buckets</h4><p>In Supabase dashboard → Storage → New bucket: <code>community-banners</code>, <code>community-icons</code>, <code>post-media</code></p></div>
+          </div>
+          <div class="step">
+            <div class="step-num blue">2</div>
+            <div class="step-body"><h4>Set public access</h4><p>Set <code>community-banners</code> and <code>community-icons</code> to public (CDN-served URLs)</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num blue">3</div>
+            <div class="step-body"><h4>Upload from backend</h4><p>Use service key on backend to upload, store public URL in DB</p></div>
+          </div>
+        </div>
+        <pre style="margin-top:12px;"><span class="cmt">// services/storage.js</span>
+<span class="kw">async function</span> <span class="fn">uploadBanner</span>(file, slug) {
+  <span class="kw">const</span> <span class="var">path</span> <span class="op">=</span> <span class="str">`${slug}/banner.webp`</span>;
+  <span class="kw">const</span> <span class="var">webp</span> <span class="op">=</span> <span class="kw">await</span> sharp(file.buffer)
+    .<span class="fn">resize</span>(<span class="num">1500</span>, <span class="num">500</span>, { fit: <span class="str">'cover'</span> })
+    .<span class="fn">webp</span>({ quality: <span class="num">85</span> })
+    .<span class="fn">toBuffer</span>();
+  <span class="kw">const</span> { data } <span class="op">=</span> <span class="kw">await</span> supabase.storage
+    .<span class="fn">from</span>(<span class="str">'community-banners'</span>)
+    .<span class="fn">upload</span>(path, webp, { upsert: <span class="kw">true</span>, contentType: <span class="str">'image/webp'</span> });
+  <span class="kw">return</span> supabase.storage.<span class="fn">from</span>(<span class="str">'community-banners'</span>)
+    .<span class="fn">getPublicUrl</span>(path).data.publicUrl;
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 10: GOTCHAS & TIPS ─── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon si-purple">⚡</div>
+      <h2>Critical Gotchas &amp; Cursor Tips</h2>
+      <span class="section-num">10 / 10</span>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3>X OAuth 2.0 Gotchas</h3>
+          <table>
+            <tr>
+              <td><span class="tag tag-red">⚠️</span></td>
+              <td class="td-note">X free developer tier only allows <strong>500k tweets/month</strong> read limit. For a community app you mostly read users, so you're fine — but batch requests carefully.</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-red">⚠️</span></td>
+              <td class="td-note">The <code>profile_image_url</code> from X API returns <code>_normal</code> size (48×48). Replace it with <code>_400x400</code> for full quality.</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-orange">💡</span></td>
+              <td class="td-note">Store <code>x_refresh_token</code> and implement token refresh logic. X access tokens expire in 2 hours.</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-orange">💡</span></td>
+              <td class="td-note">Use PKCE flow (code_verifier / code_challenge) — it's required for X OAuth 2.0 public clients.</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-green">✅</span></td>
+              <td class="td-note">For follower/following counts, use <code>public_metrics</code> field: <code>?user.fields=public_metrics</code></td>
+            </tr>
+          </table>
+        </div>
+        <div class="card">
+          <h3 class="orange">Heroku Gotchas</h3>
+          <table>
+            <tr><td><span class="tag tag-red">⚠️</span></td><td class="td-note">Heroku dynos sleep after 30min on free/eco tier. Use a paid dyno or Heroku Scheduler ping to keep it warm.</td></tr>
+            <tr><td><span class="tag tag-red">⚠️</span></td><td class="td-note">Use <code>express-session</code> with Redis (not MemoryStore) for OAuth state — MemoryStore resets on dyno restart.</td></tr>
+            <tr><td><span class="tag tag-orange">💡</span></td><td class="td-note">Set <code>trust proxy</code> in Express: <code>app.set('trust proxy', 1)</code> — needed for secure cookies behind Heroku's load balancer.</td></tr>
+            <tr><td><span class="tag tag-green">✅</span></td><td class="td-note">Heroku auto-detects Node.js. Just push to the Heroku git remote and it builds + deploys.</td></tr>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 class="blue">Supabase Performance Tips</h3>
+          <table>
+            <tr><td><span class="tag tag-green">✅</span></td><td class="td-note">Add indexes: <code>CREATE INDEX ON posts(community_id, created_at DESC)</code> for feed queries.</td></tr>
+            <tr><td><span class="tag tag-green">✅</span></td><td class="td-note">Use denormalized <code>like_count</code> / <code>reply_count</code> on posts table — update via trigger or app logic for fast reads.</td></tr>
+            <tr><td><span class="tag tag-orange">💡</span></td><td class="td-note">Use Supabase Realtime subscriptions on <code>posts</code> table for live feed updates without polling.</td></tr>
+            <tr><td><span class="tag tag-red">⚠️</span></td><td class="td-note">Enable Row Level Security on all tables. Start with permissive policies, tighten later.</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <h3 class="purple">Cursor Prompts That Work Well</h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num purple">→</div>
+              <div class="step-body"><h4>For auth middleware:</h4><p><em>"Write an Express middleware that reads Bearer JWT from Authorization header, verifies with JWT_SECRET env var, fetches the user from Supabase users table by userId in payload, and attaches to req.user. Handle expired/invalid tokens with 401."</em></p></div>
+            </div>
+            <div class="step">
+              <div class="step-num purple">→</div>
+              <div class="step-body"><h4>For feed query:</h4><p><em>"Write a Supabase query that fetches the latest 20 posts for a community by slug, joining author info (username, avatar_url, display_name) from users table, ordered by created_at DESC, with cursor-based pagination."</em></p></div>
+            </div>
+            <div class="step">
+              <div class="step-num purple">→</div>
+              <div class="step-body"><h4>For like toggle:</h4><p><em>"Write a POST /posts/:id/like Express handler that toggles a like: if post_likes row exists for (post_id, user_id), delete it and decrement like_count; otherwise insert it and increment like_count. Use a transaction."</em></p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>React Router Setup (App.jsx)</h3>
+      <pre><span class="kw">import</span> { BrowserRouter, Routes, Route } <span class="kw">from</span> <span class="str">'react-router-dom'</span>;
+<span class="kw">import</span> { QueryClient, QueryClientProvider } <span class="kw">from</span> <span class="str">'@tanstack/react-query'</span>;
+<span class="kw">import</span> { Toaster } <span class="kw">from</span> <span class="str">'react-hot-toast'</span>;
+
+<span class="kw">const</span> <span class="var">qc</span> <span class="op">=</span> <span class="kw">new</span> <span class="fn">QueryClient</span>();
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="op">&lt;</span><span class="fn">QueryClientProvider</span> client={qc}<span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="fn">BrowserRouter</span><span class="op">&gt;</span>
+        <span class="op">&lt;</span><span class="fn">Routes</span><span class="op">&gt;</span>
+          <span class="op">&lt;</span><span class="fn">Route</span> path=<span class="str">"/"</span> element={<span class="op">&lt;</span><span class="fn">Home</span> <span class="op">/&gt;</span>} <span class="op">/&gt;</span>
+          <span class="op">&lt;</span><span class="fn">Route</span> path=<span class="str">"/c/:slug"</span> element={<span class="op">&lt;</span><span class="fn">Community</span> <span class="op">/&gt;</span>} <span class="op">/&gt;</span>
+          <span class="op">&lt;</span><span class="fn">Route</span> path=<span class="str">"/c/:slug/settings"</span> element={<span class="op">&lt;</span><span class="fn">AuthGuard</span><span class="op">&gt;</span><span class="op">&lt;</span><span class="fn">CommunitySettings</span> <span class="op">/&gt;</span><span class="op">&lt;/</span><span class="fn">AuthGuard</span><span class="op">&gt;</span>} <span class="op">/&gt;</span>
+          <span class="op">&lt;</span><span class="fn">Route</span> path=<span class="str">"/create"</span> element={<span class="op">&lt;</span><span class="fn">AuthGuard</span><span class="op">&gt;</span><span class="op">&lt;</span><span class="fn">CreateCommunity</span> <span class="op">/&gt;</span><span class="op">&lt;/</span><span class="fn">AuthGuard</span><span class="op">&gt;</span>} <span class="op">/&gt;</span>
+          <span class="op">&lt;</span><span class="fn">Route</span> path=<span class="str">"/profile/:username"</span> element={<span class="op">&lt;</span><span class="fn">Profile</span> <span class="op">/&gt;</span>} <span class="op">/&gt;</span>
+          <span class="op">&lt;</span><span class="fn">Route</span> path=<span class="str">"/auth/callback"</span> element={<span class="op">&lt;</span><span class="fn">AuthCallback</span> <span class="op">/&gt;</span>} <span class="op">/&gt;</span>
+          <span class="op">&lt;</span><span class="fn">Route</span> path=<span class="str">"/invite/:token"</span> element={<span class="op">&lt;</span><span class="fn">InviteAccept</span> <span class="op">/&gt;</span>} <span class="op">/&gt;</span>
+        <span class="op">&lt;/</span><span class="fn">Routes</span><span class="op">&gt;</span>
+      <span class="op">&lt;/</span><span class="fn">BrowserRouter</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="fn">Toaster</span> position=<span class="str">"bottom-right"</span> <span class="op">/&gt;</span>
+    <span class="op">&lt;/</span><span class="fn">QueryClientProvider</span><span class="op">&gt;</span>
+  );
+}</pre>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:14px;">
+      <div class="callout-icon">🏗️</div>
+      <div class="callout-body">
+        <strong>Recommended Build Order for Cursor</strong>
+        <p>1. Supabase schema + tables → 2. Backend Express skeleton + auth routes → 3. X OAuth PKCE flow → 4. JWT middleware → 5. Community CRUD endpoints → 6. Posts/likes/replies → 7. Frontend Vite setup + routing → 8. Auth flow + Zustand store → 9. Community pages + post feed → 10. Image uploads → 11. Deploy backend to Heroku → 12. Deploy frontend to Vercel</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <strong>TCOM — Trenches Community</strong> &nbsp;·&nbsp; Cursor Development Cheat Sheet &nbsp;·&nbsp;
+  Stack: Vite · React · Express · Supabase · Heroku · Vercel · X OAuth 2.0
+</div>
+
+</body>
+</html>

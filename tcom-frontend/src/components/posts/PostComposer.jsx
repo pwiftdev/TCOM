@@ -78,12 +78,6 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
           rows={3}
           maxLength={600}
         />
-        <div className="composer-tools">
-          <label className="btn-ghost media-upload-btn">
-            Upload photo
-            <input type="file" accept="image/*" multiple onChange={onPickFiles} disabled={uploadMutation.isPending || mediaUrls.length >= 4} />
-          </label>
-        </div>
         {mediaUrls.length > 0 && (
           <div className="media-preview-grid">
             {mediaUrls.map((url) => (
@@ -111,6 +105,12 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
           >
             {mutation.isPending ? 'Posting…' : 'Post'}
           </button>
+        </div>
+        <div className="composer-tools">
+          <label className="btn-ghost media-upload-btn">
+            Upload photo
+            <input type="file" accept="image/*" multiple onChange={onPickFiles} disabled={uploadMutation.isPending || mediaUrls.length >= 4} />
+          </label>
         </div>
       </div>
     </div>

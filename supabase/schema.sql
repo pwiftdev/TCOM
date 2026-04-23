@@ -95,3 +95,65 @@ $$;
 create or replace function increment_post_count(community_slug text) returns void language sql as $$
   update communities set post_count = post_count + 1 where slug = community_slug;
 $$;
+
+-- Storage bucket for post media (frontend uploads directly)
+insert into storage.buckets (id, name, public)
+values ('post-media', 'post-media', true)
+on conflict (id) do update set public = excluded.public;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'post_media_public_read'
+  ) then
+    create policy post_media_public_read
+      on storage.objects
+      for select
+      using (bucket_id = 'post-media');
+  end if;
+
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'post_media_public_insert'
+  ) then
+    create policy post_media_public_insert
+      on storage.objects
+      for insert
+      with check (bucket_id = 'post-media');
+  end if;
+
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'post_media_public_update'
+  ) then
+    create policy post_media_public_update
+      on storage.objects
+      for update
+      using (bucket_id = 'post-media')
+      with check (bucket_id = 'post-media');
+  end if;
+
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'post_media_public_delete'
+  ) then
+    create policy post_media_public_delete
+      on storage.objects
+      for delete
+      using (bucket_id = 'post-media');
+  end if;
+end
+$$;

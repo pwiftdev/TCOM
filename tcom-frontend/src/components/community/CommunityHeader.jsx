@@ -8,6 +8,7 @@ import { Avatar } from '../ui/Avatar';
 import { IconUsers, IconSettings, IconX } from '../ui/Icon';
 import { MembersDialog } from './MembersDialog';
 import { LoginWithX } from '../auth/LoginWithX';
+import { UserXLink } from '../profile/UserXLink';
 
 export function CommunityHeader({ community }) {
   const user = useAuthStore((s) => s.user);
@@ -59,6 +60,25 @@ export function CommunityHeader({ community }) {
         <div className="community-hero-body">
           <h1>{community.name}</h1>
           <p className="community-hero-desc">{community.description || 'No description yet.'}</p>
+          {(community.contract_address || community.pump_fun_link) && (
+            <div className="community-token-meta">
+              {community.contract_address && (
+                <span className="token-chip" title={community.contract_address}>
+                  CA: {community.contract_address}
+                </span>
+              )}
+              {community.pump_fun_link && (
+                <a
+                  href={community.pump_fun_link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="token-chip token-link"
+                >
+                  Pump.fun
+                </a>
+              )}
+            </div>
+          )}
 
           <div className="community-hero-meta">
             <span className="creator">
@@ -66,9 +86,9 @@ export function CommunityHeader({ community }) {
               <span>
                 Created by{' '}
                 {community.creator?.username ? (
-                  <Link to={`/profile/${community.creator.username}`}>
+                  <UserXLink username={community.creator.username}>
                     @{community.creator.username}
-                  </Link>
+                  </UserXLink>
                 ) : (
                   <span className="muted">unknown</span>
                 )}

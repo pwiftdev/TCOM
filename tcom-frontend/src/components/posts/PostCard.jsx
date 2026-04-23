@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -10,6 +9,7 @@ import { LikeButton } from './LikeButton';
 import { ReplyThread } from './ReplyThread';
 import { IconReply, IconTrash } from '../ui/Icon';
 import { useAuthStore } from '../../store/authStore';
+import { UserXLink } from '../profile/UserXLink';
 
 dayjs.extend(relativeTime);
 
@@ -26,7 +26,7 @@ function PostMedia({ urls }) {
   );
 }
 
-export function PostCard({ post, communitySlug, canPin = false }) {
+export function PostCard({ post, communitySlug, canPin = false, canModerate = false }) {
   const [showReplies, setShowReplies] = useState(false);
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
@@ -48,7 +48,7 @@ export function PostCard({ post, communitySlug, canPin = false }) {
     onError: (err) => toast.error(err?.response?.data?.error || 'Could not update pin'),
   });
 
-  const canDelete = user && post.author_id === user.id;
+  const canDelete = Boolean(user && (post.author_id === user.id || canModerate));
   const replyCount = post.reply_count || 0;
 
   function handleReplyClick() {
@@ -65,9 +65,11 @@ export function PostCard({ post, communitySlug, canPin = false }) {
       <div className="post-body">
         <header className="post-meta">
           {post.is_pinned && <span className="pill pin-pill">Pinned</span>}
-          <Link to={`/profile/${post.users?.username || ''}`}>
+          <UserXLink username={post.users?.username}>
             <strong>{post.users?.display_name || post.users?.username || 'Unknown'}</strong>
-          </Link>
+          </UserXLink>
+          {post.author_role === 'moderator' && <span className="pill role">Moderator</span>}
+          {post.author_role === 'owner' && <span className="pill role">Owner</span>}
           <span className="handle">@{post.users?.username || 'unknown'}</span>
           <span className="dot">·</span>
           <time title={dayjs(post.created_at).format('MMM D, YYYY HH:mm')}>

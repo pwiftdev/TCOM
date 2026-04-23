@@ -8,6 +8,8 @@ export default function CreateCommunity() {
   const [form, setForm] = useState({
     name: '',
     description: '',
+    contract_address: '',
+    pump_fun_link: '',
     visibility: 'public',
     tags: [],
   });
@@ -62,6 +64,26 @@ export default function CreateCommunity() {
             value={form.description}
             onChange={(e) => update('description', e.target.value)}
             maxLength={500}
+          />
+        </label>
+        <label>
+          <span className="muted">Contract address</span>
+          <input
+            className="input"
+            placeholder="0x..."
+            value={form.contract_address}
+            onChange={(e) => update('contract_address', e.target.value)}
+            maxLength={140}
+          />
+        </label>
+        <label>
+          <span className="muted">Pump.fun Link (Optional)</span>
+          <input
+            className="input"
+            placeholder="https://pump.fun/coin/..."
+            value={form.pump_fun_link}
+            onChange={(e) => update('pump_fun_link', e.target.value)}
+            maxLength={300}
           />
         </label>
         <label>

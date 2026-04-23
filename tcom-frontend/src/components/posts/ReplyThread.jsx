@@ -3,10 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
 import { postApi } from '../../api/posts';
 import { Avatar } from '../ui/Avatar';
 import { useAuthStore } from '../../store/authStore';
+import { UserXLink } from '../profile/UserXLink';
 
 dayjs.extend(relativeTime);
 
@@ -51,9 +51,9 @@ export function ReplyThread({ postId, communitySlug }) {
           <Avatar size="sm" src={reply.users?.avatar_url} name={reply.users?.username} />
           <div className="post-body">
             <header className="post-meta">
-              <Link to={`/profile/${reply.users?.username || ''}`}>
+              <UserXLink username={reply.users?.username}>
                 <strong>{reply.users?.display_name || reply.users?.username || 'Unknown'}</strong>
-              </Link>
+              </UserXLink>
               <span className="handle">@{reply.users?.username}</span>
               <span className="dot">·</span>
               <time>{dayjs(reply.created_at).fromNow()}</time>

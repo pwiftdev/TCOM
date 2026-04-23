@@ -5,7 +5,7 @@ import { postApi } from '../../api/posts';
 import { useAuthStore } from '../../store/authStore';
 import { Avatar } from '../ui/Avatar';
 import { LoginWithX } from '../auth/LoginWithX';
-import { IconTrash } from '../ui/Icon';
+import { IconTrash, IconImage, IconSmile, IconSparkles } from '../ui/Icon';
 
 const MAX = 500;
 
@@ -67,9 +67,9 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
   }
 
   return (
-    <div className="composer">
+    <div className="composer composer-x">
       <Avatar src={user.avatar_url} name={user.username} />
-      <div>
+      <div className="composer-main">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -95,22 +95,28 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
             ))}
           </div>
         )}
-        <div className="composer-footer">
+        <div className="composer-footer composer-footer-x">
+          <div className="composer-action-row">
+            <label className="composer-action-icon" title="Upload photo">
+              <IconImage width={18} height={18} />
+              <input type="file" accept="image/*" multiple onChange={onPickFiles} disabled={uploadMutation.isPending || mediaUrls.length >= 4} />
+            </label>
+            <button type="button" className="composer-action-icon" disabled title="Stickers soon">
+              <IconSparkles width={18} height={18} />
+            </button>
+            <button type="button" className="composer-action-icon" disabled title="Emoji soon">
+              <IconSmile width={18} height={18} />
+            </button>
+          </div>
           <span className={`char-counter ${warnClass}`}>{remaining}</span>
           <button
             type="button"
-            className="btn"
+            className="btn composer-post-btn"
             onClick={() => mutation.mutate()}
             disabled={disabled}
           >
             {mutation.isPending ? 'Posting…' : 'Post'}
           </button>
-        </div>
-        <div className="composer-tools">
-          <label className="btn-ghost media-upload-btn">
-            Upload photo
-            <input type="file" accept="image/*" multiple onChange={onPickFiles} disabled={uploadMutation.isPending || mediaUrls.length >= 4} />
-          </label>
         </div>
       </div>
     </div>

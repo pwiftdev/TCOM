@@ -14,10 +14,26 @@ const schema = z.object({
   name: z.string().min(3).max(80),
   slug: z.string().min(3).max(80).optional(),
   description: z.string().max(5000).optional().default(''),
+  contract_address: z.string().max(140).optional().nullable(),
+  pump_fun_link: z.string().max(300).optional().nullable(),
   visibility: z.enum(['public', 'private', 'invite']).default('public'),
   tags: z.array(z.string()).optional().default([]),
 });
-const roomIdSchema = z.string().uuid();
+
+async function getCommunityBySlug(slug) {
+  const { data } = await supabase.from('communities').select('id, owner_id, slug').eq('slug', slug).single();
+  return data;
+}
+
+async function getMemberRole(communityId, userId) {
+  const { data } = await supabase
+    .from('community_members')
+    .select('role')
+    .eq('community_id', communityId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return data?.role || null;
+}
 
 router.get('/', async (_req, res) => {
   const { data, error } = await supabase
@@ -64,102 +80,14 @@ router.get('/:slug', optionalAuth, async (req, res) => {
   return res.json(community);
 });
 
-router.get('/:slug/voice', async (req, res) => {
-  const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
-  if (!community) return res.status(404).json({ error: 'Community not found' });
-
-  const { data: room, error } = await supabase
-    .from('community_voice_rooms')
-    .select('*, host:created_by(username,display_name,avatar_url)')
-    .eq('community_id', community.id)
-    .eq('is_active', true)
-    .order('started_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) return res.status(400).json({ error: error.message });
-  if (!room) return res.json({ active_room: null });
-
-  const room_url = `https://meet.jit.si/${room.room_key}`;
-  return res.json({ active_room: { ...room, room_url } });
-});
-
-router.post('/:slug/voice/start', authenticate, async (req, res) => {
-  const body = z.object({ title: z.string().max(120).optional() }).safeParse(req.body || {});
-  if (!body.success) return res.status(400).json({ error: body.error.flatten() });
-
-  const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
-  if (!community) return res.status(404).json({ error: 'Community not found' });
-
-  const { data: membership } = await supabase
-    .from('community_members')
-    .select('id')
-    .eq('community_id', community.id)
-    .eq('user_id', req.user.id)
-    .maybeSingle();
-  if (!membership) return res.status(403).json({ error: 'Only community members can start voice chat' });
-
-  const { data: active } = await supabase
-    .from('community_voice_rooms')
-    .select('*')
-    .eq('community_id', community.id)
-    .eq('is_active', true)
-    .order('started_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (active) {
-    return res.json({ active_room: { ...active, room_url: `https://meet.jit.si/${active.room_key}` }, already: true });
-  }
-
-  const room_key = `tcom-${req.params.slug}-${Date.now().toString(36)}`;
-  const { data: created, error } = await supabase
-    .from('community_voice_rooms')
-    .insert({
-      community_id: community.id,
-      created_by: req.user.id,
-      title: body.data.title || 'Community Voice Chat',
-      provider: 'jitsi',
-      room_key,
-      is_active: true,
-    })
-    .select('*')
-    .single();
-  if (error) return res.status(400).json({ error: error.message });
-
-  return res.status(201).json({ active_room: { ...created, room_url: `https://meet.jit.si/${created.room_key}` } });
-});
-
-router.post('/:slug/voice/:roomId/end', authenticate, async (req, res) => {
-  const roomIdParsed = roomIdSchema.safeParse(req.params.roomId);
-  if (!roomIdParsed.success) return res.status(400).json({ error: 'Invalid room id' });
-
-  const { data: community } = await supabase.from('communities').select('id,owner_id').eq('slug', req.params.slug).single();
-  if (!community) return res.status(404).json({ error: 'Community not found' });
-
-  const { data: room } = await supabase
-    .from('community_voice_rooms')
-    .select('*')
-    .eq('id', roomIdParsed.data)
-    .eq('community_id', community.id)
-    .single();
-  if (!room) return res.status(404).json({ error: 'Voice room not found' });
-
-  const isOwner = community.owner_id === req.user.id;
-  const isHost = room.created_by === req.user.id;
-  if (!isOwner && !isHost) return res.status(403).json({ error: 'Only room host or owner can end voice chat' });
-
-  const { error } = await supabase
-    .from('community_voice_rooms')
-    .update({ is_active: false, ended_at: new Date().toISOString() })
-    .eq('id', room.id);
-  if (error) return res.status(400).json({ error: error.message });
-
-  return res.json({ ok: true });
-});
-
 router.post('/', authenticate, async (req, res) => {
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
-  const input = parsed.data;
+  const input = {
+    ...parsed.data,
+    contract_address: parsed.data.contract_address?.trim() || null,
+    pump_fun_link: parsed.data.pump_fun_link?.trim() || null,
+  };
   const slug = toSlug(input.slug || input.name);
   const { data: community, error } = await supabase
     .from('communities')
@@ -186,6 +114,13 @@ router.delete('/:slug', authenticate, requireOwner, async (req, res) => {
 router.post('/:slug/join', authenticate, async (req, res) => {
   const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
   if (!community) return res.status(404).json({ error: 'Community not found' });
+  const { data: ban } = await supabase
+    .from('community_bans')
+    .select('id')
+    .eq('community_id', community.id)
+    .eq('user_id', req.user.id)
+    .maybeSingle();
+  if (ban) return res.status(403).json({ error: 'You are banned from this community' });
   const { data: existing } = await supabase
     .from('community_members')
     .select('id')
@@ -244,6 +179,81 @@ router.put('/:slug/moderators', authenticate, requireOwner, async (req, res) => 
   const { error } = await supabase.from('community_members').update({ role }).eq('community_id', community.id).eq('user_id', user.id);
   if (error) return res.status(400).json({ error: error.message });
   return res.json({ ok: true, role });
+});
+
+router.post('/:slug/ban', authenticate, async (req, res) => {
+  const payload = z.object({ username: z.string().min(1), reason: z.string().max(500).optional() }).safeParse(req.body);
+  if (!payload.success) return res.status(400).json({ error: payload.error.flatten() });
+
+  const community = await getCommunityBySlug(req.params.slug);
+  if (!community) return res.status(404).json({ error: 'Community not found' });
+
+  const actorRole = await getMemberRole(community.id, req.user.id);
+  const isOwner = community.owner_id === req.user.id;
+  if (!isOwner && actorRole !== 'moderator') return res.status(403).json({ error: 'Moderator access required' });
+
+  const { data: target } = await supabase.from('users').select('id,username').eq('username', payload.data.username).single();
+  if (!target) return res.status(404).json({ error: 'User not found' });
+  if (target.id === community.owner_id) return res.status(400).json({ error: 'Cannot ban community owner' });
+  if (target.id === req.user.id) return res.status(400).json({ error: 'Cannot ban yourself' });
+
+  const targetRole = await getMemberRole(community.id, target.id);
+  if (!isOwner && ['owner', 'moderator'].includes(targetRole || '')) {
+    return res.status(403).json({ error: 'Only owner can ban moderators' });
+  }
+
+  await supabase
+    .from('community_bans')
+    .upsert(
+      { community_id: community.id, user_id: target.id, banned_by: req.user.id, reason: payload.data.reason || null },
+      { onConflict: 'community_id,user_id' }
+    );
+
+  const { data: existingMember } = await supabase
+    .from('community_members')
+    .select('id')
+    .eq('community_id', community.id)
+    .eq('user_id', target.id)
+    .maybeSingle();
+  if (existingMember) {
+    await supabase.from('community_members').delete().eq('community_id', community.id).eq('user_id', target.id);
+    await supabase.rpc('decrement_member_count', { community_slug: req.params.slug });
+  }
+
+  return res.json({ ok: true });
+});
+
+router.post('/:slug/unban', authenticate, async (req, res) => {
+  const payload = z.object({ username: z.string().min(1) }).safeParse(req.body);
+  if (!payload.success) return res.status(400).json({ error: payload.error.flatten() });
+
+  const community = await getCommunityBySlug(req.params.slug);
+  if (!community) return res.status(404).json({ error: 'Community not found' });
+  const actorRole = await getMemberRole(community.id, req.user.id);
+  const isOwner = community.owner_id === req.user.id;
+  if (!isOwner && actorRole !== 'moderator') return res.status(403).json({ error: 'Moderator access required' });
+
+  const { data: target } = await supabase.from('users').select('id').eq('username', payload.data.username).single();
+  if (!target) return res.status(404).json({ error: 'User not found' });
+
+  await supabase.from('community_bans').delete().eq('community_id', community.id).eq('user_id', target.id);
+  return res.json({ ok: true });
+});
+
+router.get('/:slug/bans', authenticate, async (req, res) => {
+  const community = await getCommunityBySlug(req.params.slug);
+  if (!community) return res.status(404).json({ error: 'Community not found' });
+  const actorRole = await getMemberRole(community.id, req.user.id);
+  const isOwner = community.owner_id === req.user.id;
+  if (!isOwner && actorRole !== 'moderator') return res.status(403).json({ error: 'Moderator access required' });
+
+  const { data, error } = await supabase
+    .from('community_bans')
+    .select('id, reason, created_at, users:user_id(username,display_name,avatar_url)')
+    .eq('community_id', community.id)
+    .order('created_at', { ascending: false });
+  if (error) return res.status(400).json({ error: error.message });
+  return res.json(data || []);
 });
 
 router.post('/:slug/banner', authenticate, requireOwner, upload.single('banner'), async (req, res) => {

@@ -75,3 +75,27 @@ export const IconShare = (p) => (
     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
   </svg>
 );
+
+export const IconImage = (p) => (
+  <svg {...strokeBase} {...p}>
+    <rect x="3" y="3" width="18" height="18" rx="3" ry="3" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <path d="M21 15l-5-5L5 21" />
+  </svg>
+);
+
+export const IconSmile = (p) => (
+  <svg {...strokeBase} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+    <line x1="9" y1="10" x2="9.01" y2="10" />
+    <line x1="15" y1="10" x2="15.01" y2="10" />
+  </svg>
+);
+
+export const IconSparkles = (p) => (
+  <svg {...strokeBase} {...p}>
+    <path d="M12 3l1.9 4.1L18 9l-4.1 1.9L12 15l-1.9-4.1L6 9l4.1-1.9z" />
+    <path d="M19 14l.95 2.05L22 17l-2.05.95L19 20l-.95-2.05L16 17l2.05-.95z" />
+  </svg>
+);

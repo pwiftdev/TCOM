@@ -103,7 +103,7 @@ export default function Home() {
         )}
 
         {communities.length > 0 && (
-          <div className="grid grid-2">
+          <div className="grid community-feed">
             {communities.map((c) => (
               <CommunityCard key={c.id} community={c} />
             ))}

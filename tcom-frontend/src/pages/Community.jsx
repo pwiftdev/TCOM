@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { communityApi } from '../api/communities';
 import { postApi } from '../api/posts';
 import { CommunityHeader } from '../components/community/CommunityHeader';
-import { VoiceChatPanel } from '../components/community/VoiceChatPanel';
 import { PostComposer } from '../components/posts/PostComposer';
 import { PostCard } from '../components/posts/PostCard';
 import { useAuthStore } from '../store/authStore';
@@ -27,6 +26,7 @@ export default function Community() {
 
   const postList = posts || [];
   const canPin = Boolean(user && community && community.owner_id === user.id);
+  const canModerate = Boolean(community && ['owner', 'moderator'].includes(community.my_role || ''));
 
   return (
     <div className="container grid fade-in" style={{ maxWidth: 760 }}>
@@ -45,7 +45,6 @@ export default function Community() {
 
       {community && (
         <>
-          <VoiceChatPanel communitySlug={slug} community={community} />
           <PostComposer communitySlug={slug} />
 
           {loadingPosts && (
@@ -64,7 +63,7 @@ export default function Community() {
           {postList.length > 0 && (
             <div className="grid">
               {postList.map((p) => (
-                <PostCard key={p.id} post={p} communitySlug={slug} canPin={canPin} />
+                <PostCard key={p.id} post={p} communitySlug={slug} canPin={canPin} canModerate={canModerate} />
               ))}
             </div>
           )}

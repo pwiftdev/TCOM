@@ -26,6 +26,20 @@ async function attachLikedByMe(posts, userId) {
   return posts;
 }
 
+async function attachAuthorRoles(posts, communityId) {
+  if (!Array.isArray(posts) || posts.length === 0) return posts;
+  const authorIds = [...new Set(posts.map((p) => p.author_id).filter(Boolean))];
+  if (authorIds.length === 0) return posts;
+  const { data: memberships } = await supabase
+    .from('community_members')
+    .select('user_id, role')
+    .eq('community_id', communityId)
+    .in('user_id', authorIds);
+  const roleByUser = new Map((memberships || []).map((m) => [m.user_id, m.role]));
+  for (const p of posts) p.author_role = roleByUser.get(p.author_id) || null;
+  return posts;
+}
+
 router.get('/community/:slug', optionalAuth, async (req, res) => {
   const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
   if (!community) return res.status(404).json({ error: 'Community not found' });
@@ -38,6 +52,7 @@ router.get('/community/:slug', optionalAuth, async (req, res) => {
     .order('created_at', { ascending: false })
     .limit(30);
   if (error) return res.status(400).json({ error: error.message });
+  await attachAuthorRoles(data, community.id);
   await attachLikedByMe(data, req.user?.id);
   return res.json(data);
 });
@@ -56,6 +71,13 @@ router.post('/community/:slug', authenticate, async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
   const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
   if (!community) return res.status(404).json({ error: 'Community not found' });
+  const { data: ban } = await supabase
+    .from('community_bans')
+    .select('id')
+    .eq('community_id', community.id)
+    .eq('user_id', req.user.id)
+    .maybeSingle();
+  if (ban) return res.status(403).json({ error: 'You are banned from this community' });
   const { data, error } = await supabase
     .from('posts')
     .insert({
@@ -99,6 +121,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
     .eq('parent_post_id', req.params.id)
     .order('created_at', { ascending: true });
   const all = [post, ...(replies || [])];
+  await attachAuthorRoles(all, post.community_id);
   await attachLikedByMe(all, req.user?.id);
   return res.json({ ...post, replies: replies || [] });
 });
@@ -113,6 +136,13 @@ router.post('/:id/reply', authenticate, async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
   const { data: parent } = await supabase.from('posts').select('id,community_id').eq('id', req.params.id).single();
   if (!parent) return res.status(404).json({ error: 'Parent post not found' });
+  const { data: ban } = await supabase
+    .from('community_bans')
+    .select('id')
+    .eq('community_id', parent.community_id)
+    .eq('user_id', req.user.id)
+    .maybeSingle();
+  if (ban) return res.status(403).json({ error: 'You are banned from this community' });
   const { data, error } = await supabase
     .from('posts')
     .insert({

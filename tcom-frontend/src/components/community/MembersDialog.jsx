@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
 import { communityApi } from '../../api/communities';
 import { Avatar } from '../ui/Avatar';
 import { Dialog } from '../ui/Dialog';
+import { UserXLink } from '../profile/UserXLink';
 
 export function MembersDialog({ open, onOpenChange, communitySlug, memberCount }) {
   const { data, isLoading } = useQuery({
@@ -31,9 +31,9 @@ export function MembersDialog({ open, onOpenChange, communitySlug, memberCount }
               <strong>{m.users?.display_name || m.users?.username || 'Unknown'}</strong>
               <span>
                 {m.users?.username ? (
-                  <Link to={`/profile/${m.users.username}`} onClick={() => onOpenChange(false)}>
+                  <UserXLink username={m.users.username} closeParent={() => onOpenChange(false)}>
                     @{m.users.username}
-                  </Link>
+                  </UserXLink>
                 ) : (
                   'unknown'
                 )}

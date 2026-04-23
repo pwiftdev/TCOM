@@ -20,6 +20,8 @@ create table if not exists communities (
   slug text unique not null,
   name text not null,
   description text,
+  contract_address text,
+  pump_fun_link text,
   banner_url text,
   icon_url text,
   owner_id uuid references users(id) on delete set null,
@@ -29,6 +31,9 @@ create table if not exists communities (
   tags text[] default '{}',
   created_at timestamptz default now()
 );
+
+alter table communities add column if not exists contract_address text;
+alter table communities add column if not exists pump_fun_link text;
 
 create table if not exists community_members (
   id uuid primary key default gen_random_uuid(),
@@ -69,21 +74,18 @@ create table if not exists community_invites (
   expires_at timestamptz
 );
 
-create table if not exists community_voice_rooms (
+create table if not exists community_bans (
   id uuid primary key default gen_random_uuid(),
   community_id uuid references communities(id) on delete cascade not null,
-  created_by uuid references users(id) on delete set null,
-  title text default 'Community Voice Chat',
-  provider text default 'jitsi',
-  room_key text unique not null,
-  is_active bool default true,
-  started_at timestamptz default now(),
-  ended_at timestamptz,
-  created_at timestamptz default now()
+  user_id uuid references users(id) on delete cascade not null,
+  banned_by uuid references users(id) on delete set null,
+  reason text,
+  created_at timestamptz default now(),
+  unique(community_id, user_id)
 );
 
 create index if not exists idx_posts_community_created on posts(community_id, created_at desc);
-create index if not exists idx_voice_rooms_community_active on community_voice_rooms(community_id, is_active, started_at desc);
+create index if not exists idx_community_bans_community on community_bans(community_id, created_at desc);
 
 create or replace function increment_like_count(post_uuid uuid) returns void language sql as $$
   update posts set like_count = like_count + 1 where id = post_uuid;
@@ -109,6 +111,10 @@ $$;
 create or replace function increment_post_count(community_slug text) returns void language sql as $$
   update communities set post_count = post_count + 1 where slug = community_slug;
 $$;
+
+-- Voice chat feature removed
+drop index if exists idx_voice_rooms_community_active;
+drop table if exists community_voice_rooms;
 
 -- Storage bucket for post media (frontend uploads directly)
 insert into storage.buckets (id, name, public)

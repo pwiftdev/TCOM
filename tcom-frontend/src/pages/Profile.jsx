@@ -57,27 +57,29 @@ export default function Profile() {
           <div className="profile-v2-cover-orb orb-a" />
           <div className="profile-v2-cover-orb orb-b" />
         </div>
-        <div className="container profile-v2-identity">
-          <div className="profile-v2-avatar">
-            <Avatar size="lg" src={user.avatar_url} name={user.username} />
-          </div>
-          <div className="profile-v2-identity-body">
-            <div className="profile-v2-namerow">
-              <h1>{user.display_name || user.username}</h1>
-              <a
-                href={`https://x.com/${user.username}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-ghost profile-v2-x-btn"
-              >
-                <IconX width={12} height={12} /> View on X
-              </a>
+        <div className="container">
+          <div className="profile-v2-identity">
+            <div className="profile-v2-avatar">
+              <Avatar size="lg" src={user.avatar_url} name={user.username} />
             </div>
-            <div className="profile-v2-handle">
-              @{user.username}
-              {joined && <span className="muted"> · Joined X {joined}</span>}
+            <div className="profile-v2-identity-body">
+              <div className="profile-v2-namerow">
+                <h1>{user.display_name || user.username}</h1>
+                <a
+                  href={`https://x.com/${user.username}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-ghost profile-v2-x-btn"
+                >
+                  <IconX width={12} height={12} /> View on X
+                </a>
+              </div>
+              <div className="profile-v2-handle">
+                @{user.username}
+                {joined && <span className="muted"> · Joined X {joined}</span>}
+              </div>
+              {user.bio && <p className="profile-v2-bio">{user.bio}</p>}
             </div>
-            {user.bio && <p className="profile-v2-bio">{user.bio}</p>}
             <div className="profile-v2-stats">
               <div className="profile-v2-stat">
                 <div className="profile-v2-stat-value">{formatCount(user.followers_count)}</div>
@@ -139,7 +141,7 @@ function CommunityGroup({ label, items, accent = false }) {
         <span className={`pill ${accent ? 'role' : ''}`}>{label}</span>
         <span className="muted">{items.length}</span>
       </div>
-      <div className="explore-grid">
+      <div className="profile-v2-grid">
         {items.map((c) => (
           <CommunityCard key={c.id} community={c} />
         ))}

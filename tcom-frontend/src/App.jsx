@@ -7,6 +7,7 @@ import Community from './pages/Community';
 import CreateCommunity from './pages/CreateCommunity';
 import Profile from './pages/Profile';
 import AuthCallback from './pages/AuthCallback';
+import Docs from './pages/Docs';
 import { AuthGuard } from './components/auth/AuthGuard';
 import { useCommunity } from './hooks/useCommunity';
 import { CommunitySettings } from './components/community/CommunitySettings';
@@ -26,7 +27,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-const TCOM_CA = '6oqrBATpFy8ispnR7b2Fc2gUniJ6dj31Z3MXcVHepump';
 
 function CommunitySettingsPage() {
   const { slug } = useParams();
@@ -50,7 +50,6 @@ function AppShell({ children }) {
   const apiBase = import.meta.env.VITE_API_URL;
   const hydrating = Boolean(token) && !user;
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [copiedCa, setCopiedCa] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -74,17 +73,7 @@ function AppShell({ children }) {
   function handleLogout() {
     setMobileOpen(false);
     logout();
-  }
-
-  async function copyCA() {
-    try {
-      await navigator.clipboard.writeText(TCOM_CA);
-      setCopiedCa(true);
-      toast.success('TCOM CA copied');
-      setTimeout(() => setCopiedCa(false), 1400);
-    } catch {
-      toast.error('Could not copy CA');
-    }
+    toast.success('Logged out');
   }
 
   return (
@@ -98,12 +87,10 @@ function AppShell({ children }) {
           <nav className="topbar-nav">
             <NavLink to="/" end>Communities</NavLink>
             <a href="/#explore">Explore</a>
-            <a href="/#docs">Docs</a>
+            <NavLink to="/docs">Docs</NavLink>
           </nav>
           <div className="topbar-user">
-            <button type="button" className="topbar-pill topbar-pill-ca" onClick={copyCA}>
-              {copiedCa ? 'Copied CA' : 'Copy CA'}
-            </button>
+            <OnlineIndicator />
             {user ? (
               <>
                 <Link className="topbar-pill topbar-pill-ghost" to={`/profile/${user.username}`}>
@@ -112,6 +99,14 @@ function AppShell({ children }) {
                 <Link className="topbar-pill topbar-pill-solid" to="/create">
                   Create Community <span aria-hidden="true">→</span>
                 </Link>
+                <button
+                  type="button"
+                  className="topbar-pill topbar-pill-ghost topbar-pill-logout"
+                  onClick={handleLogout}
+                  title="Log out"
+                >
+                  Logout
+                </button>
               </>
             ) : hydrating ? (
               <span className="spinner" />
@@ -174,6 +169,7 @@ function AppShell({ children }) {
 
         <nav className="mobile-nav-links">
           <NavLink to="/" end onClick={() => setMobileOpen(false)}>Explore</NavLink>
+          <NavLink to="/docs" onClick={() => setMobileOpen(false)}>Docs</NavLink>
           {user && <NavLink to="/create" onClick={() => setMobileOpen(false)}>Create community</NavLink>}
           {user && (
             <NavLink to={`/profile/${user.username}`} onClick={() => setMobileOpen(false)}>
@@ -220,6 +216,7 @@ export default function App() {
               }
             />
             <Route path="/profile/:username" element={<Profile />} />
+            <Route path="/docs" element={<Docs />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

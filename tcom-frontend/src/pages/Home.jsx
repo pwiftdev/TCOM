@@ -87,18 +87,25 @@ export default function Home() {
     <div className="home fade-in">
       {/* Hero */}
       <section className="hero-v2">
+        <div className="hero-v2-aurora" aria-hidden="true">
+          <div className="orb orb-1" />
+          <div className="orb orb-2" />
+          <div className="orb orb-3" />
+          <div className="hero-v2-grid-bg" />
+        </div>
+
         <div className="hero-v2-inner container">
           <div className="hero-v2-row">
             <div className="hero-v2-copy">
               <div className="hero-v2-eyebrow">
-                <span className="hero-v2-dot" /> CRYPTO COMMUNITIES, REGROUPED.
+                <span className="hero-v2-dot" /> TCOM · CRYPTO COMMUNITIES
               </div>
               <h1 className="hero-v2-title">
                 <span className="hero-v2-title-line">The trenches,</span>
                 <span className="hero-v2-title-line accent">regrouped.</span>
               </h1>
               <p className="hero-v2-sub">
-                Home for crypto natives. Communities powered by your X identity — share alpha, build together, and move as one.
+                Home for crypto natives. Communities powered by your X identity — share alpha, build your tribe, own your voice.
               </p>
 
               <div className="hero-v2-actions">
@@ -123,8 +130,37 @@ export default function Home() {
             </div>
 
             <div className="hero-v2-visual" aria-hidden="true">
-              <div className="hero-visual-pattern" />
-              <img src="/logo.svg" alt="" className="hero-visual-logo" />
+              <div className="hero-logo-stage">
+                <div className="hero-logo-glow" />
+                <div className="hero-logo-ring hero-logo-ring-3" />
+                <div className="hero-logo-ring hero-logo-ring-2" />
+                <div className="hero-logo-ring hero-logo-ring-1" />
+                <div className="hero-logo-orbit hero-logo-orbit-outer">
+                  <span className="hero-logo-orbit-dot" />
+                </div>
+                <div className="hero-logo-orbit hero-logo-orbit-mid">
+                  <span className="hero-logo-orbit-dot" />
+                </div>
+                <div className="hero-logo-orbit hero-logo-orbit-inner">
+                  <span className="hero-logo-orbit-dot" />
+                </div>
+                <svg className="hero-logo-loop" viewBox="0 0 320 320" aria-hidden="true">
+                  <defs>
+                    <path
+                      id="heroLogoTextPath"
+                      d="M160,160 m-138,0 a138,138 0 1,1 276,0 a138,138 0 1,1 -276,0"
+                    />
+                  </defs>
+                  <text className="hero-logo-loop-text">
+                    <textPath href="#heroLogoTextPath" startOffset="0">
+                      TCOM · THE TRENCHES · REGROUPED · CRYPTO COMMUNITIES · POWERED BY X ·&nbsp;
+                    </textPath>
+                  </text>
+                </svg>
+                <div className="hero-logo-disc">
+                  <img src="/tcomlogo.jpeg" alt="" className="hero-logo-img" />
+                </div>
+              </div>
             </div>
           </div>
 

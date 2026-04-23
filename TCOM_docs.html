@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TCOM Docs — Trenches Community</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --bg:        #0F0E0C;
+    --surface:   #1A1916;
+    --surface2:  #242220;
+    --border:    #2E2B28;
+    --gold:      #C9A96E;
+    --gold-l:    #DFC28F;
+    --gold-pale: #F0DDB8;
+    --gold-m:    #8C7248;
+    --gold-d:    #7A5E30;
+    --white:     #F5F0E8;
+    --body:      #C4B99A;
+    --muted:     #8A7E68;
+    --dim:       #4A4438;
+    --sidebar-w: 260px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  a { color: var(--gold); text-decoration: none; }
+  a:hover { color: var(--gold-l); text-decoration: underline; }
+
+  /* ── TOP NAV */
+  .topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 58px;
+    background: rgba(15,14,12,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    gap: 24px;
+    z-index: 100;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+  }
+  .nav-logo .mark {
+    width: 30px; height: 30px;
+    background: var(--gold);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; color: #000;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-divider { width: 1px; height: 20px; background: var(--border); }
+  .nav-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .nav-right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+  .nav-link { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .nav-link:hover { color: var(--body); text-decoration: none; }
+  .nav-btn {
+    font-size: 12px; font-weight: 700;
+    padding: 6px 16px;
+    background: var(--gold);
+    color: #000;
+    border-radius: 6px;
+    border: none; cursor: pointer;
+  }
+
+  /* ── LAYOUT */
+  .layout {
+    display: flex;
+    padding-top: 58px;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    position: fixed;
+    top: 58px; left: 0; bottom: 0;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 28px 0 40px;
+    background: var(--bg);
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .sb-section { margin-bottom: 28px; padding: 0 20px; }
+  .sb-section-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--gold-m);
+    margin-bottom: 8px;
+    padding: 0 8px;
+  }
+  .sb-item {
+    display: block;
+    padding: 7px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    border-radius: 6px;
+    transition: all 0.1s;
+    text-decoration: none;
+  }
+  .sb-item:hover { background: var(--surface); color: var(--body); text-decoration: none; }
+  .sb-item.active { background: rgba(201,169,110,0.1); color: var(--gold); font-weight: 600; }
+  .sb-item .sb-icon { margin-right: 8px; opacity: 0.7; }
+
+  /* ── MAIN CONTENT */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    max-width: 780px;
+    padding: 52px 64px 100px;
+  }
+
+  /* ── RIGHT TOC */
+  .toc {
+    width: 200px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 78px;
+    right: 32px;
+    font-size: 12px;
+  }
+  .toc-title {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 10px;
+  }
+  .toc-item {
+    display: block;
+    padding: 4px 0;
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+    transition: all 0.1s;
+  }
+  .toc-item:hover { color: var(--gold); border-left-color: var(--gold); text-decoration: none; }
+
+  /* ── CONTENT TYPOGRAPHY */
+  .doc-section {
+    margin-bottom: 72px;
+    padding-bottom: 72px;
+    border-bottom: 1px solid var(--border);
+  }
+  .doc-section:last-child { border-bottom: none; }
+
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-m);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--gold-pale);
+    letter-spacing: -1.2px;
+    line-height: 1.1;
+    margin-bottom: 18px;
+  }
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    margin: 48px 0 14px;
+    padding-top: 8px;
+  }
+  h2:first-of-type { margin-top: 0; }
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+    margin: 32px 0 10px;
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 24px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  p { margin-bottom: 16px; color: var(--body); }
+  p:last-child { margin-bottom: 0; }
+
+  .lead {
+    font-size: 17px;
+    color: var(--body);
+    line-height: 1.75;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  ul, ol {
+    padding-left: 24px;
+    margin-bottom: 20px;
+  }
+  li { margin-bottom: 8px; color: var(--body); }
+  li strong { color: var(--white); font-weight: 600; }
+
+  /* ── CALLOUTS */
+  .callout {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 24px 0;
+    display: flex;
+    gap: 14px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body p { margin: 0; }
+  .callout-body strong { display: block; margin-bottom: 4px; font-size: 14px; }
+  .c-note { background: rgba(201,169,110,0.08); border-left: 3px solid var(--gold); }
+  .c-note .callout-body strong { color: var(--gold); }
+  .c-note .callout-body p { color: var(--muted); }
+  .c-tip { background: rgba(78,140,90,0.1); border-left: 3px solid #4E8C5A; }
+  .c-tip .callout-body strong { color: #7EC48A; }
+  .c-tip .callout-body p { color: var(--muted); }
+  .c-warn { background: rgba(140,58,58,0.1); border-left: 3px solid #8C3A3A; }
+  .c-warn .callout-body strong { color: #C97070; }
+  .c-warn .callout-body p { color: var(--muted); }
+
+  /* ── CODE */
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    font-size: 12.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: var(--gold);
+  }
+  pre {
+    background: #0a0908;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--body);
+  }
+  pre code { background: none; border: none; padding: 0; font-size: 13px; }
+  .hl-key { color: #C97070; }
+  .hl-str { color: #7EC4A4; }
+  .hl-val { color: var(--gold-l); }
+  .hl-cmt { color: var(--dim); font-style: italic; }
+  .hl-fn  { color: #A8C4F0; }
+  .hl-num { color: #B0C4E8; }
+
+  /* ── PROPERTY TABLE */
+  .prop-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 13.5px;
+  }
+  .prop-table thead tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .prop-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .prop-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(46,43,40,0.6);
+    vertical-align: top;
+  }
+  .prop-table tr:last-child td { border-bottom: none; }
+  .prop-table tr:hover td { background: rgba(255,255,255,0.015); }
+  .p-name { font-family: monospace; color: var(--gold); font-size: 13px; }
+  .p-type { font-family: monospace; color: #7EC4A4; font-size: 12px; }
+  .p-desc { color: var(--muted); }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .b-req { background: rgba(201,169,110,0.15); color: var(--gold); }
+  .b-opt { background: rgba(138,126,104,0.15); color: var(--muted); }
+  .b-new { background: rgba(78,140,90,0.2); color: #7EC48A; }
+
+  /* ── STEP LIST */
+  .steps { display: flex; flex-direction: column; gap: 0; margin: 24px 0; }
+  .step {
+    display: flex;
+    gap: 20px;
+    position: relative;
+  }
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .step-num {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #000;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .step-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border);
+    margin: 4px 0;
+    min-height: 24px;
+  }
+  .step:last-child .step-line { display: none; }
+  .step-body {
+    padding-bottom: 28px;
+    flex: 1;
+  }
+  .step-body h4 {
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-bottom: 6px;
+  }
+  .step-body p { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+
+  /* ── FEATURE GRID */
+  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .feature-card .fc-icon { font-size: 22px; margin-bottom: 10px; }
+  .feature-card h4 {
+    font-size: 14px; font-weight: 700; color: var(--white);
+    margin: 0 0 6px; text-transform: none; letter-spacing: 0;
+  }
+  .feature-card p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.55; }
+
+  /* ── ENDPOINT PILL */
+  .endpoint {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-family: monospace;
+    font-size: 13px;
+  }
+  .method {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .m-get    { background: rgba(78,140,90,0.2);  color: #7EC48A; }
+  .m-post   { background: rgba(201,169,110,0.15); color: var(--gold); }
+  .m-patch  { background: rgba(91,138,200,0.15); color: #8AB4E0; }
+  .m-delete { background: rgba(140,58,58,0.2); color: #C97070; }
+  .endpoint-path { color: var(--body); flex: 1; }
+  .endpoint-desc { color: var(--muted); font-size: 12px; font-family: 'Inter', sans-serif; }
+
+  /* ── TAG */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .t-gold   { background: rgba(201,169,110,0.12); color: var(--gold); border: 1px solid rgba(201,169,110,0.2); }
+  .t-green  { background: rgba(78,140,90,0.12); color: #7EC48A; border: 1px solid rgba(78,140,90,0.2); }
+  .t-muted  { background: rgba(138,126,104,0.1); color: var(--muted); border: 1px solid var(--border); }
+
+  /* ── DIVIDER */
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="nav-logo">
+    <div class="mark">TC</div>
+    <span>TCOM</span> <span style="color:var(--muted); font-weight:400;">Docs</span>
+  </div>
+  <div class="nav-divider"></div>
+  <span class="nav-label">Trenches Community</span>
+  <div class="nav-right">
+    <a class="nav-link" href="#">Changelog</a>
+    <a class="nav-link" href="#">API Reference</a>
+    <button class="nav-btn">Launch App ↗</button>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-label">Getting Started</div>
+      <a class="sb-item active" href="#intro"><span class="sb-icon">👋</span>Introduction</a>
+      <a class="sb-item" href="#quickstart"><span class="sb-icon">⚡</span>Quick Start</a>
+      <a class="sb-item" href="#auth"><span class="sb-icon">🐦</span>Login with X</a>
+      <a class="sb-item" href="#profile"><span class="sb-icon">👤</span>Your Profile</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Communities</div>
+      <a class="sb-item" href="#communities"><span class="sb-icon">🏠</span>Overview</a>
+      <a class="sb-item" href="#create-community"><span class="sb-icon">✦</span>Creating a Community</a>
+      <a class="sb-item" href="#customise"><span class="sb-icon">🎨</span>Customisation</a>
+      <a class="sb-item" href="#visibility"><span class="sb-icon">🔒</span>Visibility & Access</a>
+      <a class="sb-item" href="#joining"><span class="sb-icon">🤝</span>Joining & Invites</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Content</div>
+      <a class="sb-item" href="#posts"><span class="sb-icon">📝</span>Posts</a>
+      <a class="sb-item" href="#replies"><span class="sb-icon">💬</span>Replies & Threads</a>
+      <a class="sb-item" href="#likes"><span class="sb-icon">♥</span>Likes</a>
+      <a class="sb-item" href="#media"><span class="sb-icon">🖼️</span>Media</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Moderation</div>
+      <a class="sb-item" href="#roles"><span class="sb-icon">🛡️</span>Roles & Permissions</a>
+      <a class="sb-item" href="#moderation"><span class="sb-icon">⚔️</span>Moderation Tools</a>
+      <a class="sb-item" href="#reporting"><span class="sb-icon">🚩</span>Reporting</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">For Developers</div>
+      <a class="sb-item" href="#api"><span class="sb-icon">🔌</span>REST API</a>
+      <a class="sb-item" href="#auth-api"><span class="sb-icon">🔑</span>Authentication</a>
+      <a class="sb-item" href="#rate-limits"><span class="sb-icon">⏱️</span>Rate Limits</a>
+      <a class="sb-item" href="#errors"><span class="sb-icon">⚠️</span>Errors</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══ INTRODUCTION ═══ -->
+    <div class="doc-section" id="intro">
+      <div class="section-eyebrow">Getting Started</div>
+      <h1>Welcome to TCOM</h1>
+      <p class="lead">
+        Trenches Community is the home for crypto communities. Built for the people who live on X, lost their community when X deleted the feature, and refused to settle for Telegram. TCOM gives every project a real community — with identity, structure, and the X profile you've already built.
+      </p>
+
+      <p>If you've used X Communities, TCOM will feel immediately familiar. If you haven't, it's simple: communities are dedicated spaces where holders, builders, and degens can post, reply, and connect — all tied to real X profiles, so you always know who you're talking to.</p>
+
+      <p>This documentation covers everything — from getting your community live in under five minutes to the full API reference for developers who want to build on top of TCOM.</p>
+
+      <div class="callout c-note">
+        <div class="callout-icon">🪖</div>
+        <div class="callout-body">
+          <strong>One prerequisite</strong>
+          <p>TCOM requires an X account. There are no email/password accounts. Your X profile is your identity here — your handle, your follower count, your credibility. That's by design.</p>
+        </div>
+      </div>
+
+      <h2>What TCOM gives you</h2>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">🐦</div>
+          <h4>X-Native Identity</h4>
+          <p>Log in with X and your full profile — avatar, bio, follower count, following count — syncs automatically. No setup. No profile to fill in. You're already there.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🏠</div>
+          <h4>Project Communities</h4>
+          <p>Create a community for your coin, project, or crew. Set the name, banner, icon, and description. It's yours — built around your project's identity, not the platform's.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">📝</div>
+          <h4>Posts, Replies & Likes</h4>
+          <p>Everything works exactly the way you'd expect. Post updates, reply to alpha, like the calls that hit. The mechanics are the same as X — so there's zero learning curve.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🛡️</div>
+          <h4>Creator Controls</h4>
+          <p>As a community creator, you set the rules. Grant moderators, control visibility, pin important posts, remove members who don't fit. Your community, your standards.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🔗</div>
+          <h4>One Link to Share</h4>
+          <p>Every community gets a clean, shareable link. Drop it anywhere. Whoever clicks it sees the community, sees who's already there, and joins in one click.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🔌</div>
+          <h4>REST API</h4>
+          <p>Full API access for developers. Build bots, integrations, dashboards — whatever the trenches need. JWT-authenticated, well-documented, rate-limited fairly.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ QUICK START ═══ -->
+    <div class="doc-section" id="quickstart">
+      <div class="section-eyebrow">Getting Started</div>
+      <h2>Quick Start</h2>
+      <p>Getting your community live takes less than five minutes. Here's exactly what happens:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-left">
+            <div class="step-num">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <h4>Log in with your X account</h4>
+            <p>Click <strong>Login with X</strong> on the homepage. You'll be taken to X to approve access, then returned to TCOM. Your profile is synced automatically — no forms to fill in.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left">
+            <div class="step-num">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <h4>Create your community</h4>
+            <p>Hit <strong>New Community</strong>, give it a name, slug (your URL handle), and a brief description. This takes 60 seconds. You can customise everything else after.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left">
+            <div class="step-num">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <h4>Upload your banner and icon</h4>
+            <p>Add your project's banner (1500×500px recommended) and icon (400×400px). These are the first things people see when they land on your community page. Make them count.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left">
+            <div class="step-num">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <h4>Set your first post</h4>
+            <p>Pin an intro post so new members know what they're walking into. Tell them what the project is, what the community is for, and what the rules are. Sets the tone immediately.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left">
+            <div class="step-num">5</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <h4>Share your link</h4>
+            <p>Every community lives at <code>tcom.gg/c/your-slug</code>. Drop it in your X bio, tweet it out, pin it to your profile. Whoever clicks it can join in one tap.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout c-tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body">
+          <strong>Pro tip from the trenches</strong>
+          <p>Add your community link to your X bio immediately after creating it. Every new follower you get becomes a potential community member — but only if they can find you there.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ AUTH ═══ -->
+    <div class="doc-section" id="auth">
+      <div class="section-eyebrow">Getting Started</div>
+      <h2>Login with X</h2>
+      <p>TCOM uses X OAuth 2.0 exclusively. There are no email accounts, no passwords to forget, no separate profile to build. Your X identity is your TCOM identity — and that's exactly the point.</p>
+
+      <h3>What TCOM accesses from X</h3>
+      <p>When you log in, TCOM requests the following permissions from X:</p>
+
+      <table class="prop-table">
+        <thead>
+          <tr><th>Permission</th><th>What we use it for</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="p-name">users.read</td>
+            <td class="p-desc">Your profile: display name, @handle, avatar, bio, follower count, following count.</td>
+          </tr>
+          <tr>
+            <td class="p-name">tweet.read</td>
+            <td class="p-desc">Required by X's OAuth flow. We do not read, store, or display your tweets.</td>
+          </tr>
+          <tr>
+            <td class="p-name">offline.access</td>
+            <td class="p-desc">Allows TCOM to keep you logged in between sessions without re-prompting on every visit.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout c-warn">
+        <div class="callout-icon">🔒</div>
+        <div class="callout-body">
+          <strong>We do not post on your behalf</strong>
+          <p>TCOM does not have write access to your X account. We cannot tweet, retweet, follow, or interact with X on your behalf. Ever.</p>
+        </div>
+      </div>
+
+      <h3>Profile sync</h3>
+      <p>Your X profile data is synced to TCOM each time you log in. This means your avatar, display name, bio, and follower/following counts are always up to date on TCOM without any manual action from you.</p>
+      <p>You can also trigger a manual sync from your profile settings at any time by hitting <strong>Refresh from X</strong>.</p>
+
+      <h3>Session length</h3>
+      <p>You stay logged into TCOM for <strong>30 days</strong> from your last login. After that, you'll be prompted to re-authenticate with X. This is a security measure — X access tokens expire and need refreshing periodically.</p>
+    </div>
+
+    <!-- ═══ PROFILE ═══ -->
+    <div class="doc-section" id="profile">
+      <div class="section-eyebrow">Getting Started</div>
+      <h2>Your Profile</h2>
+      <p>Your TCOM profile is a direct reflection of your X presence. When someone visits your profile on TCOM, here's what they see:</p>
+
+      <ul>
+        <li><strong>Avatar</strong> — your X profile picture, displayed at full resolution (not the thumbnail X serves by default).</li>
+        <li><strong>Display name</strong> — your X display name, exactly as it appears on X.</li>
+        <li><strong>Handle</strong> — your @username, linked to your X profile.</li>
+        <li><strong>Bio</strong> — your X bio, pulled in directly.</li>
+        <li><strong>Followers / Following</strong> — your live X counts, refreshed on each login.</li>
+        <li><strong>Communities</strong> — every community you've joined or created on TCOM.</li>
+        <li><strong>Post history</strong> — your posts across all public communities.</li>
+      </ul>
+
+      <div class="callout c-note">
+        <div class="callout-icon">📌</div>
+        <div class="callout-body">
+          <strong>Your X stats matter here</strong>
+          <p>Follower counts are visible on your profile because credibility is part of the community fabric. A 50K-follower caller and an anonymous account don't carry the same weight — and the community deserves to know the difference.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ COMMUNITIES ═══ -->
+    <div class="doc-section" id="communities">
+      <div class="section-eyebrow">Communities</div>
+      <h2>Communities Overview</h2>
+      <p>A community is a dedicated space for a project, a coin, a crew, or an idea. Every community on TCOM is created and owned by a real X user — there are no anonymous communities, no throwaway accounts setting up fake spaces.</p>
+
+      <p>Communities have three core components:</p>
+
+      <ul>
+        <li><strong>Identity</strong> — name, slug, icon, banner, and description. The face of your community.</li>
+        <li><strong>Members</strong> — everyone who has joined, with their real X profiles. You see who's in the room.</li>
+        <li><strong>Feed</strong> — the chronological post stream. Everything your community is talking about, in one place.</li>
+      </ul>
+
+      <h3>Discovery</h3>
+      <p>Public communities are listed on the TCOM explore page, searchable by name and tag. Communities can tag themselves with relevant keywords (e.g. <code>defi</code>, <code>memes</code>, <code>solana</code>, <code>btc</code>) so the right people can find them.</p>
+      <p>Every community also has a direct URL — <code>tcom.gg/c/your-slug</code> — that works anywhere: X bio, tweets, Telegram, wherever you're dropping links.</p>
+    </div>
+
+    <!-- ═══ CREATE COMMUNITY ═══ -->
+    <div class="doc-section" id="create-community">
+      <div class="section-eyebrow">Communities</div>
+      <h2>Creating a Community</h2>
+      <p>Any logged-in user can create a community. You'll need to provide the following when creating:</p>
+
+      <table class="prop-table">
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="p-name">Name <span class="badge b-req">required</span></td>
+            <td class="p-type">string</td>
+            <td class="p-desc">The display name of your community. Max 50 characters. Can include spaces, emojis, special characters.</td>
+          </tr>
+          <tr>
+            <td class="p-name">Slug <span class="badge b-req">required</span></td>
+            <td class="p-type">string</td>
+            <td class="p-desc">Your unique community URL handle. Lowercase, hyphens only, no spaces. e.g. <code>bitcoin-trenches</code>. Cannot be changed after creation.</td>
+          </tr>
+          <tr>
+            <td class="p-name">Description <span class="badge b-opt">optional</span></td>
+            <td class="p-type">string</td>
+            <td class="p-desc">What your community is about. Markdown supported. Max 500 characters. Shows on your community page and in search results.</td>
+          </tr>
+          <tr>
+            <td class="p-name">Visibility <span class="badge b-opt">optional</span></td>
+            <td class="p-type">enum</td>
+            <td class="p-desc">Controls who can join. <code>public</code> (default), <code>private</code> (invite only). See <a href="#visibility">Visibility & Access</a>.</td>
+          </tr>
+          <tr>
+            <td class="p-name">Tags <span class="badge b-opt">optional</span></td>
+            <td class="p-type">string[]</td>
+            <td class="p-desc">Up to 5 tags for discovery. e.g. <code>defi</code>, <code>memes</code>, <code>sol</code>. Makes your community findable on the explore page.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout c-warn">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body">
+          <strong>Slugs are permanent</strong>
+          <p>Once set, your community slug cannot be changed — it's baked into every link you've ever shared. Choose carefully. If your project's name is "Bitcoin Trenches", your slug should be <code>bitcoin-trenches</code>, not <code>bt123</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CUSTOMISE ═══ -->
+    <div class="doc-section" id="customise">
+      <div class="section-eyebrow">Communities</div>
+      <h2>Customisation</h2>
+      <p>As the community creator, you have full control over how your community looks and feels. These settings live in your community's <strong>Settings</strong> panel, accessible only to the owner.</p>
+
+      <h3>Banner</h3>
+      <p>The banner is the first visual impression of your community. It appears at the top of your community page, full-width.</p>
+      <ul>
+        <li><strong>Recommended size:</strong> 1500×500px</li>
+        <li><strong>Accepted formats:</strong> JPG, PNG, WebP, GIF (static)</li>
+        <li><strong>Max file size:</strong> 8MB</li>
+        <li>Images are automatically converted to WebP and optimised on upload.</li>
+      </ul>
+
+      <h3>Icon</h3>
+      <p>The icon appears everywhere your community is referenced — search results, member cards, the explore page. Think of it as your community's logo.</p>
+      <ul>
+        <li><strong>Recommended size:</strong> 400×400px (square)</li>
+        <li><strong>Accepted formats:</strong> JPG, PNG, WebP</li>
+        <li><strong>Max file size:</strong> 4MB</li>
+        <li>Displayed as a circle in most contexts. Keep key visuals centred.</li>
+      </ul>
+
+      <h3>Name & Description</h3>
+      <p>Both can be updated at any time without affecting your community URL (which is tied to your slug, not your name). Descriptions support basic Markdown — bold, italic, links, line breaks.</p>
+
+      <h3>Tags</h3>
+      <p>Up to 5 tags. Keep them relevant and specific. <code>defi</code> is better than <code>crypto</code>. <code>sol-memes</code> is better than <code>memes</code>. Tags directly influence how discoverable your community is on the explore page.</p>
+    </div>
+
+    <!-- ═══ VISIBILITY ═══ -->
+    <div class="doc-section" id="visibility">
+      <div class="section-eyebrow">Communities</div>
+      <h2>Visibility & Access</h2>
+      <p>Communities on TCOM have two visibility modes. Choose based on how you want people to find and enter your space.</p>
+
+      <h3>Public <span class="tag t-green">default</span></h3>
+      <p>Anyone can find, view, and join a public community. It appears in search results and the explore page. Members join instantly with a single click — no approval required.</p>
+      <p>Use public communities for: project launches, token communities, meme coins, alpha groups you want to grow fast.</p>
+
+      <h3>Private <span class="tag t-muted">invite only</span></h3>
+      <p>Private communities do not appear in search or on the explore page. They are only accessible via a direct invite link generated by the community owner or a moderator. The community page shows a locked state to non-members — name and icon only, no feed visible.</p>
+      <p>Use private communities for: inner circles, paid access groups, moderated signals channels, allowlist holders.</p>
+
+      <h3>Invite Links</h3>
+      <p>Owners and moderators can generate invite links for private (and public) communities. Each link can be configured with:</p>
+      <ul>
+        <li><strong>Max uses</strong> — limit how many people can use the link. Leave empty for unlimited.</li>
+        <li><strong>Expiry</strong> — set the link to expire after a specific date/time. Leave empty for permanent.</li>
+      </ul>
+      <p>Invite links use the format <code>tcom.gg/invite/[token]</code>. Anyone with the link who has an X account can join.</p>
+    </div>
+
+    <!-- ═══ JOINING ═══ -->
+    <div class="doc-section" id="joining">
+      <div class="section-eyebrow">Communities</div>
+      <h2>Joining & Leaving</h2>
+
+      <h3>Joining</h3>
+      <p>To join a public community: visit the community page and hit <strong>Join Community</strong>. That's it. You're in. Your X profile is now visible in the member list, and you can start posting immediately.</p>
+      <p>To join a private community: you need a valid invite link. When you click an invite link, TCOM will prompt you to log in with X if you aren't already, then add you to the community automatically.</p>
+
+      <h3>Leaving</h3>
+      <p>You can leave any community from the community's settings menu. Your previous posts will remain visible in the feed — leaving doesn't delete your history.</p>
+
+      <div class="callout c-note">
+        <div class="callout-icon">👑</div>
+        <div class="callout-body">
+          <strong>Community creators cannot leave</strong>
+          <p>If you created the community, you cannot leave it — only delete it or transfer ownership. Ownership transfer is available from the Settings panel. Transfer goes to any existing moderator.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ POSTS ═══ -->
+    <div class="doc-section" id="posts">
+      <div class="section-eyebrow">Content</div>
+      <h2>Posts</h2>
+      <p>Posts are the primary content type in a TCOM community. Every member of a community can create posts. Posts live in the community's feed, ordered chronologically with pinned posts always at the top.</p>
+
+      <h3>Creating a post</h3>
+      <p>Hit the compose box at the top of any community feed. Write your post (up to 500 characters), optionally attach media, and hit <strong>Post</strong>. It appears in the feed instantly.</p>
+
+      <table class="prop-table">
+        <thead>
+          <tr><th>Property</th><th>Limit</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="p-name">Content</td>
+            <td class="p-type">500 chars</td>
+            <td class="p-desc">Plain text. Links are auto-detected and made clickable. No Markdown in posts (keeps it clean).</td>
+          </tr>
+          <tr>
+            <td class="p-name">Images</td>
+            <td class="p-type">Up to 4</td>
+            <td class="p-desc">JPG, PNG, WebP, GIF. Max 8MB per image. Displayed in a grid layout in the feed.</td>
+          </tr>
+          <tr>
+            <td class="p-name">Videos</td>
+            <td class="p-type">1 per post</td>
+            <td class="p-desc">MP4 only. Max 100MB. Max 2 minutes. Cannot be combined with images.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Pinned posts</h3>
+      <p>Community owners and moderators can pin up to <strong>3 posts</strong> to the top of the feed. Pinned posts always appear before the chronological feed, regardless of when they were created. Use pins for: project announcements, rules, important alpha, or intro posts for new members.</p>
+
+      <h3>Deleting posts</h3>
+      <p>You can delete your own posts at any time. Community owners and moderators can delete any post in their community — this is a core moderation tool. Deleted posts are permanently removed; there is no recovery.</p>
+    </div>
+
+    <!-- ═══ REPLIES ═══ -->
+    <div class="doc-section" id="replies">
+      <div class="section-eyebrow">Content</div>
+      <h2>Replies & Threads</h2>
+      <p>Any post can be replied to. Replies create a thread attached to the parent post — they don't create new top-level feed items. This keeps the main feed clean while enabling real conversation depth on individual posts.</p>
+
+      <p>Replies support the same character limit (500) as posts, but do not currently support media attachments. Media in replies is planned for a future release.</p>
+
+      <h3>Thread depth</h3>
+      <p>TCOM supports up to <strong>3 levels</strong> of reply nesting. You can reply to a reply, and reply to that — but threads don't go deeper than that. This is intentional. Deep nesting becomes unreadable fast, and the trenches don't have time for Reddit comment chains.</p>
+    </div>
+
+    <!-- ═══ LIKES ═══ -->
+    <div class="doc-section" id="likes">
+      <div class="section-eyebrow">Content</div>
+      <h2>Likes</h2>
+      <p>Posts and replies can be liked by any community member. Likes are public — you can see who liked a post by tapping the like count. Like counts are displayed on every post in the feed.</p>
+      <p>Liking a post you've already liked un-likes it. There are no other reaction types. Likes are simple and intentional — the goal is signal, not engagement theater.</p>
+    </div>
+
+    <!-- ═══ MEDIA ═══ -->
+    <div class="doc-section" id="media">
+      <div class="section-eyebrow">Content</div>
+      <h2>Media</h2>
+      <p>Media uploaded to TCOM — post images, videos, community banners, and icons — is stored on Supabase Storage and served via CDN. All images are automatically converted to WebP on upload for optimal load times.</p>
+      <p>Media URLs are permanent once generated. Deleting the parent post does not remove the underlying media file from storage immediately — files are cleaned up in a background process.</p>
+
+      <div class="callout c-warn">
+        <div class="callout-icon">🚫</div>
+        <div class="callout-body">
+          <strong>Content policy</strong>
+          <p>Do not upload NSFW content, content that violates intellectual property rights, or media designed to harass specific individuals. Violations result in post removal and may result in community or account suspension.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ROLES ═══ -->
+    <div class="doc-section" id="roles">
+      <div class="section-eyebrow">Moderation</div>
+      <h2>Roles & Permissions</h2>
+      <p>Every member of a community has a role. Roles determine what actions a member can take within the community.</p>
+
+      <table class="prop-table">
+        <thead>
+          <tr><th>Role</th><th>Who holds it</th><th>Permissions</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="p-name">👑 Owner</td>
+            <td class="p-type">1 per community</td>
+            <td class="p-desc">Full access. Edit all settings, upload banner/icon, grant/revoke moderators, delete community, transfer ownership. Cannot be removed from the community by anyone except themselves (via transfer).</td>
+          </tr>
+          <tr>
+            <td class="p-name">🛡️ Moderator</td>
+            <td class="p-type">Up to 10</td>
+            <td class="p-desc">Can delete any post or reply, remove members, pin/unpin posts, generate invite links. Cannot edit community settings or grant other moderators.</td>
+          </tr>
+          <tr>
+            <td class="p-name">👤 Member</td>
+            <td class="p-type">Everyone else</td>
+            <td class="p-desc">Can post, reply, like, and view all community content. Can delete their own posts. Can leave the community.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Granting moderators</h3>
+      <p>Only the community owner can grant moderator status. To grant a moderator:</p>
+      <ol>
+        <li>Go to your community's <strong>Settings → Moderators</strong> panel.</li>
+        <li>Search for the member by their X handle.</li>
+        <li>Hit <strong>Grant Moderator</strong>.</li>
+      </ol>
+      <p>The user must already be a member of the community before they can be granted moderator status. Moderator status can be revoked at any time by the owner.</p>
+    </div>
+
+    <!-- ═══ MODERATION ═══ -->
+    <div class="doc-section" id="moderation">
+      <div class="section-eyebrow">Moderation</div>
+      <h2>Moderation Tools</h2>
+      <p>Owners and moderators have the following tools available to keep their community clean:</p>
+
+      <h3>Delete post</h3>
+      <p>Any post or reply in the community can be deleted by a moderator or the owner. The deletion is immediate and permanent. The member who posted is not notified automatically, but the post disappears from their history.</p>
+
+      <h3>Remove member</h3>
+      <p>A member can be removed from the community by a moderator or the owner. Removed members can re-join public communities unless they are also banned. Their previous posts remain visible in the feed.</p>
+
+      <h3>Ban member</h3>
+      <p>Banning prevents a member from rejoining the community — even via invite link. Bans are community-level, not platform-level. A banned member can join other TCOM communities freely. Bans can be lifted at any time by the owner.</p>
+
+      <h3>Pin / Unpin post</h3>
+      <p>Moderators and owners can pin up to 3 posts to the top of the feed. Pinned posts are visually distinguished in the feed and are always shown before chronological content.</p>
+
+      <div class="callout c-tip">
+        <div class="callout-icon">🛡️</div>
+        <div class="callout-body">
+          <strong>Moderation is your responsibility</strong>
+          <p>TCOM gives you the tools — the moderation itself is yours to handle. Set clear rules in your community description. Pin them. Grant mods you trust. Communities that self-moderate well grow faster and hold better.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ REPORTING ═══ -->
+    <div class="doc-section" id="reporting">
+      <div class="section-eyebrow">Moderation</div>
+      <h2>Reporting</h2>
+      <p>Any member can report a post or community that violates TCOM's platform rules. Reports are reviewed by the TCOM team, not the community moderators.</p>
+      <p>To report a post: tap the <strong>⋯</strong> menu on any post and select <strong>Report</strong>. Select a reason and submit. The TCOM team reviews all reports within 24 hours.</p>
+      <p>Community-level reports (for communities that violate platform rules in their entirety) can be submitted via <a href="#">support@tcom.gg</a>.</p>
+    </div>
+
+    <!-- ═══ API ═══ -->
+    <div class="doc-section" id="api">
+      <div class="section-eyebrow">For Developers</div>
+      <h2>REST API</h2>
+      <p class="lead">TCOM exposes a full REST API for developers who want to build on top of the platform. Bots, dashboards, integrations, custom front-ends — if you need programmatic access to TCOM data, this is how you do it.</p>
+
+      <p>The base URL for all API requests is:</p>
+      <pre><code>https://api.tcom.gg/v1</code></pre>
+
+      <p>All responses are JSON. All requests must include a valid JWT in the <code>Authorization</code> header (see <a href="#auth-api">Authentication</a>).</p>
+
+      <h3>Core endpoints</h3>
+
+      <h4>Auth</h4>
+      <div class="endpoint"><span class="method m-get">GET</span><span class="endpoint-path">/auth/me</span><span class="endpoint-desc">Get the authenticated user's profile</span></div>
+      <div class="endpoint"><span class="method m-post">POST</span><span class="endpoint-path">/auth/refresh-profile</span><span class="endpoint-desc">Re-sync profile data from X</span></div>
+
+      <h4>Communities</h4>
+      <div class="endpoint"><span class="method m-get">GET</span><span class="endpoint-path">/communities</span><span class="endpoint-desc">List public communities (paginated)</span></div>
+      <div class="endpoint"><span class="method m-get">GET</span><span class="endpoint-path">/communities/:slug</span><span class="endpoint-desc">Get a single community by slug</span></div>
+      <div class="endpoint"><span class="method m-post">POST</span><span class="endpoint-path">/communities</span><span class="endpoint-desc">Create a new community</span></div>
+      <div class="endpoint"><span class="method m-patch">PATCH</span><span class="endpoint-path">/communities/:slug</span><span class="endpoint-desc">Update community settings (owner only)</span></div>
+      <div class="endpoint"><span class="method m-post">POST</span><span class="endpoint-path">/communities/:slug/join</span><span class="endpoint-desc">Join a community</span></div>
+      <div class="endpoint"><span class="method m-post">POST</span><span class="endpoint-path">/communities/:slug/leave</span><span class="endpoint-desc">Leave a community</span></div>
+      <div class="endpoint"><span class="method m-get">GET</span><span class="endpoint-path">/communities/:slug/members</span><span class="endpoint-desc">List community members</span></div>
+
+      <h4>Posts</h4>
+      <div class="endpoint"><span class="method m-get">GET</span><span class="endpoint-path">/communities/:slug/posts</span><span class="endpoint-desc">Get the community feed (paginated)</span></div>
+      <div class="endpoint"><span class="method m-post">POST</span><span class="endpoint-path">/communities/:slug/posts</span><span class="endpoint-desc">Create a post in a community</span></div>
+      <div class="endpoint"><span class="method m-get">GET</span><span class="endpoint-path">/posts/:id</span><span class="endpoint-desc">Get a single post with replies</span></div>
+      <div class="endpoint"><span class="method m-delete">DELETE</span><span class="endpoint-path">/posts/:id</span><span class="endpoint-desc">Delete a post (author or mod)</span></div>
+      <div class="endpoint"><span class="method m-post">POST</span><span class="endpoint-path">/posts/:id/like</span><span class="endpoint-desc">Toggle like on a post</span></div>
+      <div class="endpoint"><span class="method m-post">POST</span><span class="endpoint-path">/posts/:id/reply</span><span class="endpoint-desc">Reply to a post</span></div>
+
+      <h3>Pagination</h3>
+      <p>All list endpoints use cursor-based pagination. Pass <code>cursor</code> as a query parameter to fetch the next page. Each response includes a <code>next_cursor</code> field — pass this value as <code>cursor</code> on your next request. When <code>next_cursor</code> is <code>null</code>, you've reached the end.</p>
+
+      <pre><span class="hl-cmt">// Example paginated request</span>
+GET /communities/bitcoin-trenches/posts?limit=20&cursor=eyJpZCI6IjEyMzQ1In0
+
+<span class="hl-cmt">// Response</span>
+{
+  <span class="hl-key">"data"</span>: [ <span class="hl-cmt">/* array of posts */</span> ],
+  <span class="hl-key">"next_cursor"</span>: <span class="hl-str">"eyJpZCI6IjEwOTg3In0"</span>,
+  <span class="hl-key">"count"</span>: <span class="hl-num">20</span>
+}</pre>
+    </div>
+
+    <!-- ═══ AUTH API ═══ -->
+    <div class="doc-section" id="auth-api">
+      <div class="section-eyebrow">For Developers</div>
+      <h2>API Authentication</h2>
+      <p>TCOM API uses <strong>JSON Web Tokens (JWT)</strong>. You get a token by completing the X OAuth flow through TCOM. The token is issued by TCOM's backend after your X identity is verified.</p>
+
+      <h3>Getting a token</h3>
+      <p>Direct users to the TCOM login flow. After they authenticate with X, TCOM redirects to your callback URL with a <code>token</code> query parameter. Store this token securely.</p>
+
+      <pre><span class="hl-cmt">// After X OAuth callback, TCOM redirects to:</span>
+https://yourapp.com/callback?token=eyJhbGciOiJIUzI1NiIs...
+
+<span class="hl-cmt">// Store it, then use it in all API requests:</span>
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...</pre>
+
+      <h3>Token lifetime</h3>
+      <p>Tokens are valid for <strong>30 days</strong>. After expiry, the user must re-authenticate via X OAuth. There is no token refresh endpoint — this is intentional to stay in sync with X session state.</p>
+
+      <div class="callout c-warn">
+        <div class="callout-icon">🔐</div>
+        <div class="callout-body">
+          <strong>Treat tokens like passwords</strong>
+          <p>Never log tokens, never expose them client-side in public repositories, never send them over unencrypted connections. A leaked token gives full access to that user's TCOM account.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RATE LIMITS ═══ -->
+    <div class="doc-section" id="rate-limits">
+      <div class="section-eyebrow">For Developers</div>
+      <h2>Rate Limits</h2>
+      <p>TCOM enforces rate limits to keep the platform fast and fair for everyone. Limits are applied per authenticated user (not per IP).</p>
+
+      <table class="prop-table">
+        <thead>
+          <tr><th>Endpoint category</th><th>Limit</th><th>Window</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="p-name">Read endpoints (GET)</td>
+            <td class="p-type">300 requests</td>
+            <td class="p-desc">Per 15 minutes</td>
+          </tr>
+          <tr>
+            <td class="p-name">Write endpoints (POST, PATCH, DELETE)</td>
+            <td class="p-type">60 requests</td>
+            <td class="p-desc">Per 15 minutes</td>
+          </tr>
+          <tr>
+            <td class="p-name">Post creation specifically</td>
+            <td class="p-type">10 posts</td>
+            <td class="p-desc">Per 5 minutes</td>
+          </tr>
+          <tr>
+            <td class="p-name">Media uploads</td>
+            <td class="p-type">20 uploads</td>
+            <td class="p-desc">Per hour</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>When you hit a rate limit, the API returns a <code>429 Too Many Requests</code> response with a <code>Retry-After</code> header indicating when you can resume.</p>
+    </div>
+
+    <!-- ═══ ERRORS ═══ -->
+    <div class="doc-section" id="errors">
+      <div class="section-eyebrow">For Developers</div>
+      <h2>Errors</h2>
+      <p>TCOM uses standard HTTP status codes. Every error response includes a JSON body with a <code>code</code> (machine-readable) and a <code>message</code> (human-readable).</p>
+
+      <pre>{
+  <span class="hl-key">"error"</span>: {
+    <span class="hl-key">"code"</span>: <span class="hl-str">"COMMUNITY_NOT_FOUND"</span>,
+    <span class="hl-key">"message"</span>: <span class="hl-str">"No community exists with the slug 'bitcoin-trenches'"</span>,
+    <span class="hl-key">"status"</span>: <span class="hl-num">404</span>
+  }
+}</pre>
+
+      <table class="prop-table">
+        <thead>
+          <tr><th>Status</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="p-name">200</td><td class="p-desc">Success.</td></tr>
+          <tr><td class="p-name">400</td><td class="p-desc">Bad request — missing or invalid parameters. Check the <code>message</code> field.</td></tr>
+          <tr><td class="p-name">401</td><td class="p-desc">Unauthorized — missing or invalid JWT. Re-authenticate.</td></tr>
+          <tr><td class="p-name">403</td><td class="p-desc">Forbidden — authenticated but insufficient permissions for this action.</td></tr>
+          <tr><td class="p-name">404</td><td class="p-desc">Not found — the resource doesn't exist or is private and you're not a member.</td></tr>
+          <tr><td class="p-name">409</td><td class="p-desc">Conflict — e.g. trying to join a community you're already in, or creating a slug that's taken.</td></tr>
+          <tr><td class="p-name">429</td><td class="p-desc">Rate limited. Check <code>Retry-After</code> header.</td></tr>
+          <tr><td class="p-name">500</td><td class="p-desc">Internal server error. Rare. If it persists, contact support.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout c-note">
+        <div class="callout-icon">🪖</div>
+        <div class="callout-body">
+          <strong>Built for the trenches</strong>
+          <p>Questions, issues, or want to build something on top of TCOM? Reach out on X at <a href="#">@tcom_gg</a> or open a thread in the TCOM developers community. We're in the trenches with you.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</div><!-- /layout -->
+
+</body>
+</html>

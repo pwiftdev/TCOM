@@ -10,10 +10,17 @@ import { MembersDialog } from './MembersDialog';
 import { LoginWithX } from '../auth/LoginWithX';
 import { UserXLink } from '../profile/UserXLink';
 
+function shortAddress(addr) {
+  if (!addr) return '';
+  if (addr.length <= 14) return addr;
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
+
 export function CommunityHeader({ community }) {
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
   const [membersOpen, setMembersOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const isOwner = user && community.owner_id === user.id;
   const isMember = !!community.is_member;
@@ -41,6 +48,7 @@ export function CommunityHeader({ community }) {
   });
 
   const memberCount = community.member_count ?? 0;
+  const postCount = community.post_count ?? 0;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/c/${community.slug}` : '';
   const shareText = `Join "${community.name}" Community on TCOM, group up trenchers, let's bagwork!`;
 
@@ -50,22 +58,57 @@ export function CommunityHeader({ community }) {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
+  async function copyCA() {
+    if (!community.contract_address) return;
+    try {
+      await navigator.clipboard.writeText(community.contract_address);
+      setCopied(true);
+      toast.success('Contract copied');
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      toast.error('Could not copy');
+    }
+  }
+
   return (
     <>
       <section className="community-hero fade-in">
         <div
           className="community-hero-banner"
           style={community.banner_url ? { backgroundImage: `url(${community.banner_url})` } : undefined}
-        />
+        >
+          <div className="community-hero-banner-scrim" />
+        </div>
+
         <div className="community-hero-body">
-          <h1>{community.name}</h1>
-          <p className="community-hero-desc">{community.description || 'No description yet.'}</p>
+          <div className="community-hero-identity">
+            <div className="community-hero-icon">
+              <Avatar size="lg" src={community.icon_url} name={community.name} />
+            </div>
+            <div className="community-hero-identity-text">
+              <div className="community-hero-titlerow">
+                <h1>{community.name}</h1>
+                <span className={`pill visibility-pill ${community.visibility}`}>{community.visibility}</span>
+              </div>
+              {community.description && (
+                <p className="community-hero-desc">{community.description}</p>
+              )}
+            </div>
+          </div>
+
           {(community.contract_address || community.pump_fun_link) && (
             <div className="community-token-meta">
               {community.contract_address && (
-                <span className="token-chip" title={community.contract_address}>
-                  CA: {community.contract_address}
-                </span>
+                <button
+                  type="button"
+                  className="token-chip token-ca"
+                  onClick={copyCA}
+                  title={`Click to copy · ${community.contract_address}`}
+                >
+                  <span className="token-chip-label">CA</span>
+                  <span className="token-chip-value">{shortAddress(community.contract_address)}</span>
+                  <span className="token-chip-action">{copied ? 'Copied' : 'Copy'}</span>
+                </button>
               )}
               {community.pump_fun_link && (
                 <a
@@ -74,7 +117,7 @@ export function CommunityHeader({ community }) {
                   rel="noreferrer"
                   className="token-chip token-link"
                 >
-                  Pump.fun
+                  <span className="token-dot" /> Pump.fun
                 </a>
               )}
             </div>
@@ -83,28 +126,31 @@ export function CommunityHeader({ community }) {
           <div className="community-hero-meta">
             <span className="creator">
               <Avatar size="xs" src={community.creator?.avatar_url} name={community.creator?.username} />
-              <span>
-                Created by{' '}
-                {community.creator?.username ? (
-                  <UserXLink username={community.creator.username}>
-                    @{community.creator.username}
-                  </UserXLink>
-                ) : (
-                  <span className="muted">unknown</span>
-                )}
-              </span>
+              <span className="muted">Created by</span>
+              {community.creator?.username ? (
+                <UserXLink username={community.creator.username}>
+                  <strong>@{community.creator.username}</strong>
+                </UserXLink>
+              ) : (
+                <span className="muted">unknown</span>
+              )}
             </span>
-            <span className="dim">·</span>
+
             <button
               type="button"
-              className="members-button"
+              className="meta-stat members-button"
               onClick={() => setMembersOpen(true)}
               aria-label="View all members"
             >
               <IconUsers width={14} height={14} />
-              {memberCount} member{memberCount === 1 ? '' : 's'}
+              <strong>{memberCount.toLocaleString()}</strong>
+              <span>member{memberCount === 1 ? '' : 's'}</span>
             </button>
-            <span className="pill">{community.visibility}</span>
+
+            <span className="meta-stat">
+              <strong>{postCount.toLocaleString()}</strong>
+              <span>post{postCount === 1 ? '' : 's'}</span>
+            </span>
           </div>
 
           <div className="community-hero-actions">

@@ -46,6 +46,7 @@ function AppShell({ children }) {
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
   const logout = useAuthStore((s) => s.logout);
+  const apiBase = import.meta.env.VITE_API_URL;
   const hydrating = Boolean(token) && !user;
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -86,25 +87,35 @@ function AppShell({ children }) {
                 e.currentTarget.style.display = 'none';
               }}
             />
-            <span>TrenchCom</span>
+            <span>TRENCHCOM</span>
           </Link>
           <nav className="topbar-nav">
-            <NavLink to="/" end>Explore</NavLink>
-            {user && <NavLink to="/create">Create</NavLink>}
-            {user && <NavLink to={`/profile/${user.username}`}>Profile</NavLink>}
+            <NavLink to="/" end>Communities</NavLink>
+            <a href="/#explore">Explore</a>
+            <a href="/#about">About</a>
+            <a href="/#docs">Docs</a>
           </nav>
           <div className="topbar-user">
-            <OnlineIndicator />
             {user ? (
               <>
-                <Avatar size="xs" src={user.avatar_url} name={user.username} />
-                <span className="user-name">@{user.username}</span>
-                <button type="button" className="btn-ghost" onClick={logout}>Logout</button>
+                <Link className="topbar-pill topbar-pill-ghost" to={`/profile/${user.username}`}>
+                  Profile
+                </Link>
+                <Link className="topbar-pill topbar-pill-solid" to="/create">
+                  Join Trenches <span aria-hidden="true">→</span>
+                </Link>
               </>
             ) : hydrating ? (
               <span className="spinner" />
             ) : (
-              <LoginWithX />
+              <>
+                <a className="topbar-pill topbar-pill-ghost" href={`${apiBase}/auth/x`}>
+                  Sign in
+                </a>
+                <a className="topbar-pill topbar-pill-solid" href={`${apiBase}/auth/x`}>
+                  Join Trenches <span aria-hidden="true">→</span>
+                </a>
+              </>
             )}
           </div>
           <button

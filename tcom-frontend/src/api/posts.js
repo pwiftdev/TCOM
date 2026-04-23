@@ -1,5 +1,6 @@
 import { api } from './client';
 import { supabase } from '../lib/supabase';
+import { DESIGN_PREVIEW, designData } from '../lib/designPreview';
 
 const postMediaBucket = 'post-media';
 
@@ -33,13 +34,13 @@ async function uploadMediaToSupabase(file) {
 
 export const postApi = {
   listByCommunity: (slug, { sort = 'latest' } = {}) =>
-    api.get(`/posts/community/${slug}`, { params: { sort } }).then((r) => r.data),
-  createInCommunity: (slug, payload) => api.post(`/posts/community/${slug}`, payload).then((r) => r.data),
-  get: (id) => api.get(`/posts/${id}`).then((r) => r.data),
-  reply: (id, payload) => api.post(`/posts/${id}/reply`, payload).then((r) => r.data),
-  toggleLike: (id) => api.post(`/posts/${id}/like`).then((r) => r.data),
-  pin: (id, pinned = true) => api.post(`/posts/${id}/pin`, { pinned }).then((r) => r.data),
-  remove: (id) => api.delete(`/posts/${id}`).then((r) => r.data),
-  view: (id) => api.post(`/posts/${id}/view`).then((r) => r.data),
-  uploadMedia: (file) => uploadMediaToSupabase(file),
+    (DESIGN_PREVIEW ? designData.postsList(slug, sort) : api.get(`/posts/community/${slug}`, { params: { sort } }).then((r) => r.data)),
+  createInCommunity: (slug, payload) => (DESIGN_PREVIEW ? designData.postCreate(slug, payload) : api.post(`/posts/community/${slug}`, payload).then((r) => r.data)),
+  get: (id) => (DESIGN_PREVIEW ? designData.postGet(id) : api.get(`/posts/${id}`).then((r) => r.data)),
+  reply: (id, payload) => (DESIGN_PREVIEW ? designData.postReply(id, payload) : api.post(`/posts/${id}/reply`, payload).then((r) => r.data)),
+  toggleLike: (id) => (DESIGN_PREVIEW ? designData.postLike(id) : api.post(`/posts/${id}/like`).then((r) => r.data)),
+  pin: (id, pinned = true) => (DESIGN_PREVIEW ? designData.postPin(id, pinned) : api.post(`/posts/${id}/pin`, { pinned }).then((r) => r.data)),
+  remove: (id) => (DESIGN_PREVIEW ? designData.postDelete(id) : api.delete(`/posts/${id}`).then((r) => r.data)),
+  view: (id) => (DESIGN_PREVIEW ? designData.postView(id) : api.post(`/posts/${id}/view`).then((r) => r.data)),
+  uploadMedia: (file) => (DESIGN_PREVIEW ? Promise.resolve({ url: URL.createObjectURL(file) }) : uploadMediaToSupabase(file)),
 };

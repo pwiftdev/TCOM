@@ -2,16 +2,23 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { authApi } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
+import { DESIGN_PREVIEW, designData } from '../lib/designPreview';
 
 export function useAuthBootstrap() {
   const token = useAuthStore((s) => s.token);
   const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
 
+  useEffect(() => {
+    if (DESIGN_PREVIEW) {
+      setUser(designData.user);
+    }
+  }, [setUser]);
+
   const query = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: authApi.me,
-    enabled: Boolean(token),
+    enabled: DESIGN_PREVIEW || Boolean(token),
     retry: false,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,

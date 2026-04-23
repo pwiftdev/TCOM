@@ -5,7 +5,7 @@ import { communityApi } from '../api/communities';
 import { CommunityCard } from '../components/community/CommunityCard';
 import { LoginWithX } from '../components/auth/LoginWithX';
 import { useAuthStore } from '../store/authStore';
-import { IconPlus, IconX, IconUsers, IconSparkles } from '../components/ui/Icon';
+import { IconPlus, IconX } from '../components/ui/Icon';
 import { useMarketCaps } from '../hooks/useMarketCaps';
 
 const FILTERS = [
@@ -172,30 +172,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Feature strip */}
-      <section className="container feature-strip">
-        <FeatureTile
-          icon={<IconUsers width={18} height={18} />}
-          eyebrow="01"
-          title="Regroup"
-          body="Find your people fast. Move from noise to conviction with focused feeds."
-        />
-        <FeatureTile
-          icon={<IconSparkles width={18} height={18} />}
-          eyebrow="02"
-          title="Coordinate"
-          body="Drop thesis, post setups, reply in-thread, and build context like a living playbook."
-        />
-        <FeatureTile
-          icon={<IconX width={14} height={14} />}
-          eyebrow="03"
-          title="Push"
-          body="When it’s time to broadcast, push your community and its alpha straight back to X."
-        />
-      </section>
-
       {/* Explore */}
-      <section className="container explore">
+      <section id="explore" className="container explore">
         <div className="explore-head">
           <div>
             <div className="eyebrow-label">EXPLORE</div>
@@ -251,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* Lore */}
-      <section className="container">
+      <section id="about" className="container">
         <div className="lore-v2 fade-in">
           <div className="lore-headline">THE TRENCHES NEVER LOG OFF</div>
           <h2>
@@ -266,7 +244,7 @@ export default function Home() {
       </section>
 
       {/* Footer CTA */}
-      <footer className="cta-footer">
+      <footer id="docs" className="cta-footer">
         <div className="container cta-footer-inner">
           <div>
             <div className="eyebrow-label">READY?</div>
@@ -302,15 +280,3 @@ function Stat({ label, value }) {
   );
 }
 
-function FeatureTile({ icon, eyebrow, title, body }) {
-  return (
-    <article className="feature-tile">
-      <div className="feature-tile-head">
-        <span className="feature-tile-icon">{icon}</span>
-        <span className="feature-tile-eyebrow">{eyebrow}</span>
-      </div>
-      <h3>{title}</h3>
-      <p>{body}</p>
-    </article>
-  );
-}

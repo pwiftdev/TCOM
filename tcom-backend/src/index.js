@@ -11,7 +11,21 @@ const env = require('./config/env');
 const app = express();
 app.set('trust proxy', 1);
 app.use(helmet());
-app.use(cors({ origin: env.frontendUrl, credentials: true }));
+
+function normalizeOrigin(value) {
+  if (!value || typeof value !== 'string') return value;
+  return value.trim().replace(/\/+$/, '');
+}
+
+const allowedOrigin = normalizeOrigin(env.frontendUrl);
+app.use(cors({
+  credentials: true,
+  origin(origin, cb) {
+    // Allow server-to-server / same-origin requests with no Origin header.
+    if (!origin) return cb(null, true);
+    return cb(null, normalizeOrigin(origin) === allowedOrigin);
+  },
+}));
 app.use(express.json({ limit: '5mb' }));
 app.use(morgan('dev'));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));

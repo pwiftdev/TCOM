@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { communityApi } from '../api/communities';
 import { postApi } from '../api/posts';
 import { CommunityHeader } from '../components/community/CommunityHeader';
+import { VoiceChatPanel } from '../components/community/VoiceChatPanel';
 import { PostComposer } from '../components/posts/PostComposer';
 import { PostCard } from '../components/posts/PostCard';
 import { useAuthStore } from '../store/authStore';
@@ -44,6 +45,7 @@ export default function Community() {
 
       {community && (
         <>
+          <VoiceChatPanel communitySlug={slug} community={community} />
           <PostComposer communitySlug={slug} />
 
           {loadingPosts && (

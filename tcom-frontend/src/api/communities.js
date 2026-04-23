@@ -8,6 +8,9 @@ export const communityApi = {
   leave: (slug) => api.post(`/communities/${slug}/leave`).then((r) => r.data),
   members: (slug) => api.get(`/communities/${slug}/members`).then((r) => r.data),
   setModerator: (slug, payload) => api.put(`/communities/${slug}/moderators`, payload).then((r) => r.data),
+  getVoiceRoom: (slug) => api.get(`/communities/${slug}/voice`).then((r) => r.data),
+  startVoiceRoom: (slug, payload = {}) => api.post(`/communities/${slug}/voice/start`, payload).then((r) => r.data),
+  endVoiceRoom: (slug, roomId) => api.post(`/communities/${slug}/voice/${roomId}/end`).then((r) => r.data),
   uploadBanner: (slug, file) => {
     const form = new FormData();
     form.append('banner', file);

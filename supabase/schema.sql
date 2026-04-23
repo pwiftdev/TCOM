@@ -69,7 +69,21 @@ create table if not exists community_invites (
   expires_at timestamptz
 );
 
+create table if not exists community_voice_rooms (
+  id uuid primary key default gen_random_uuid(),
+  community_id uuid references communities(id) on delete cascade not null,
+  created_by uuid references users(id) on delete set null,
+  title text default 'Community Voice Chat',
+  provider text default 'jitsi',
+  room_key text unique not null,
+  is_active bool default true,
+  started_at timestamptz default now(),
+  ended_at timestamptz,
+  created_at timestamptz default now()
+);
+
 create index if not exists idx_posts_community_created on posts(community_id, created_at desc);
+create index if not exists idx_voice_rooms_community_active on community_voice_rooms(community_id, is_active, started_at desc);
 
 create or replace function increment_like_count(post_uuid uuid) returns void language sql as $$
   update posts set like_count = like_count + 1 where id = post_uuid;

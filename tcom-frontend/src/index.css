@@ -732,6 +732,25 @@ label > span:first-child {
   font-size: 0.9rem;
 }
 
+/* Voice panel */
+.voice-panel {
+  padding: 1rem 1.1rem;
+}
+.voice-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+.voice-panel-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.voice-panel-body {
+  display: grid;
+  gap: 0.4rem;
+}
+
 /* Empty state */
 .empty-state {
   text-align: center;

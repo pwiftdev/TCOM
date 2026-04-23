@@ -17,6 +17,7 @@ const schema = z.object({
   visibility: z.enum(['public', 'private', 'invite']).default('public'),
   tags: z.array(z.string()).optional().default([]),
 });
+const roomIdSchema = z.string().uuid();
 
 router.get('/', async (_req, res) => {
   const { data, error } = await supabase
@@ -61,6 +62,98 @@ router.get('/:slug', optionalAuth, async (req, res) => {
   }
 
   return res.json(community);
+});
+
+router.get('/:slug/voice', async (req, res) => {
+  const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
+  if (!community) return res.status(404).json({ error: 'Community not found' });
+
+  const { data: room, error } = await supabase
+    .from('community_voice_rooms')
+    .select('*, host:created_by(username,display_name,avatar_url)')
+    .eq('community_id', community.id)
+    .eq('is_active', true)
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) return res.status(400).json({ error: error.message });
+  if (!room) return res.json({ active_room: null });
+
+  const room_url = `https://meet.jit.si/${room.room_key}`;
+  return res.json({ active_room: { ...room, room_url } });
+});
+
+router.post('/:slug/voice/start', authenticate, async (req, res) => {
+  const body = z.object({ title: z.string().max(120).optional() }).safeParse(req.body || {});
+  if (!body.success) return res.status(400).json({ error: body.error.flatten() });
+
+  const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
+  if (!community) return res.status(404).json({ error: 'Community not found' });
+
+  const { data: membership } = await supabase
+    .from('community_members')
+    .select('id')
+    .eq('community_id', community.id)
+    .eq('user_id', req.user.id)
+    .maybeSingle();
+  if (!membership) return res.status(403).json({ error: 'Only community members can start voice chat' });
+
+  const { data: active } = await supabase
+    .from('community_voice_rooms')
+    .select('*')
+    .eq('community_id', community.id)
+    .eq('is_active', true)
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (active) {
+    return res.json({ active_room: { ...active, room_url: `https://meet.jit.si/${active.room_key}` }, already: true });
+  }
+
+  const room_key = `tcom-${req.params.slug}-${Date.now().toString(36)}`;
+  const { data: created, error } = await supabase
+    .from('community_voice_rooms')
+    .insert({
+      community_id: community.id,
+      created_by: req.user.id,
+      title: body.data.title || 'Community Voice Chat',
+      provider: 'jitsi',
+      room_key,
+      is_active: true,
+    })
+    .select('*')
+    .single();
+  if (error) return res.status(400).json({ error: error.message });
+
+  return res.status(201).json({ active_room: { ...created, room_url: `https://meet.jit.si/${created.room_key}` } });
+});
+
+router.post('/:slug/voice/:roomId/end', authenticate, async (req, res) => {
+  const roomIdParsed = roomIdSchema.safeParse(req.params.roomId);
+  if (!roomIdParsed.success) return res.status(400).json({ error: 'Invalid room id' });
+
+  const { data: community } = await supabase.from('communities').select('id,owner_id').eq('slug', req.params.slug).single();
+  if (!community) return res.status(404).json({ error: 'Community not found' });
+
+  const { data: room } = await supabase
+    .from('community_voice_rooms')
+    .select('*')
+    .eq('id', roomIdParsed.data)
+    .eq('community_id', community.id)
+    .single();
+  if (!room) return res.status(404).json({ error: 'Voice room not found' });
+
+  const isOwner = community.owner_id === req.user.id;
+  const isHost = room.created_by === req.user.id;
+  if (!isOwner && !isHost) return res.status(403).json({ error: 'Only room host or owner can end voice chat' });
+
+  const { error } = await supabase
+    .from('community_voice_rooms')
+    .update({ is_active: false, ended_at: new Date().toISOString() })
+    .eq('id', room.id);
+  if (error) return res.status(400).json({ error: error.message });
+
+  return res.json({ ok: true });
 });
 
 router.post('/', authenticate, async (req, res) => {

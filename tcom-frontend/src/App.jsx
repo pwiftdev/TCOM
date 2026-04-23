@@ -15,7 +15,7 @@ import { useAuthStore } from './store/authStore';
 import { Avatar } from './components/ui/Avatar';
 import { LoginWithX } from './components/auth/LoginWithX';
 import { OnlineIndicator } from './components/ui/OnlineIndicator';
-import { IconMenu, IconClose } from './components/ui/Icon';
+import { IconMenu, IconClose, IconX } from './components/ui/Icon';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -78,16 +78,9 @@ function AppShell({ children }) {
     <>
       <header className="topbar">
         <div className="topbar-inner">
-          <Link to="/" className="topbar-brand">
-            <img
-              src="/tcomlogo.jpeg"
-              alt="TrenchCom logo"
-              className="logo"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-            <span>TRENCHCOM</span>
+          <Link to="/" className="topbar-brand" aria-label="TrenchCom home">
+            <img src="/logo.svg" alt="" className="brand-logo" />
+            <img src="/wordmark.svg" alt="TrenchCom" className="brand-wordmark" />
           </Link>
           <nav className="topbar-nav">
             <NavLink to="/" end>Communities</NavLink>
@@ -108,14 +101,9 @@ function AppShell({ children }) {
             ) : hydrating ? (
               <span className="spinner" />
             ) : (
-              <>
-                <a className="topbar-pill topbar-pill-ghost" href={`${apiBase}/auth/x`}>
-                  Sign in
-                </a>
-                <a className="topbar-pill topbar-pill-solid" href={`${apiBase}/auth/x`}>
-                  Join Trenches <span aria-hidden="true">→</span>
-                </a>
-              </>
+              <a className="topbar-pill topbar-pill-x" href={`${apiBase}/auth/x`}>
+                <IconX width={14} height={14} /> Sign in with X
+              </a>
             )}
           </div>
           <button
@@ -143,8 +131,8 @@ function AppShell({ children }) {
       >
         <div className="mobile-nav-header">
           <div className="mobile-nav-brand">
-            <img src="/tcomlogo.jpeg" alt="" className="logo" />
-            <span>TrenchCom</span>
+            <img src="/logo.svg" alt="" className="brand-logo" />
+            <img src="/wordmark.svg" alt="TrenchCom" className="brand-wordmark" />
           </div>
           <OnlineIndicator />
         </div>

@@ -5,7 +5,29 @@ a { color: inherit; text-decoration: none; }
 .container { max-width: 980px; margin: 0 auto; padding: 1rem; }
 .card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 1rem; }
 .btn { background: #10b981; color: #04140e; border: 0; padding: 0.45rem 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 700; }
+.btn-ghost { background: transparent; color: #d1d5db; border: 1px solid #374151; }
 .input, textarea, select { width: 100%; background: #111827; color: #e5e7eb; border: 1px solid #374151; border-radius: 8px; padding: 0.45rem 0.6rem; }
 .grid { display: grid; gap: 1rem; }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+.muted { color: #9ca3af; }
+
+.topbar { position: sticky; top: 0; z-index: 20; background: rgba(11, 15, 20, 0.95); border-bottom: 1px solid #1f2937; backdrop-filter: blur(10px); }
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.topbar-brand { display: flex; align-items: baseline; gap: 0.6rem; font-weight: 700; }
+.topbar-nav { display: flex; align-items: center; gap: 1rem; color: #d1d5db; }
+.topbar-user { display: flex; align-items: center; gap: 0.7rem; }
+
+.hero-card h1 { margin-bottom: 0.35rem; }
+.hero-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.section-title-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.empty-state h3 { margin: 0 0 0.35rem 0; }
+.empty-state p { margin-bottom: 0.8rem; color: #9ca3af; }
+
+.community-card-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.community-card-head h3 { margin: 0; }
+.community-card-meta { display: flex; gap: 1rem; color: #9ca3af; margin: 0.7rem 0; font-size: 0.92rem; }
+.pill { border: 1px solid #374151; color: #9ca3af; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.76rem; text-transform: capitalize; }
+
+.member-list { margin-top: 0.7rem; display: grid; gap: 0.45rem; }
+.member-row { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.95rem; }

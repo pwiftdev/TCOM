@@ -3,10 +3,16 @@ import { Link } from 'react-router-dom';
 export function CommunityCard({ community }) {
   return (
     <div className="card">
-      <h3>{community.name}</h3>
-      <p>{community.description || 'No description'}</p>
-      <p>{community.member_count} members</p>
-      <Link className="btn" to={`/c/${community.slug}`}>Open</Link>
+      <div className="community-card-head">
+        <h3>{community.name}</h3>
+        <span className="pill">{community.visibility}</span>
+      </div>
+      <p>{community.description || 'No description yet.'}</p>
+      <div className="community-card-meta">
+        <span>{community.member_count} members</span>
+        <span>{community.post_count} posts</span>
+      </div>
+      <Link className="btn" to={`/c/${community.slug}`}>Open community</Link>
     </div>
   );
 }

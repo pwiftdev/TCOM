@@ -8,4 +8,11 @@ export const communityApi = {
   leave: (slug) => api.post(`/communities/${slug}/leave`).then((r) => r.data),
   members: (slug) => api.get(`/communities/${slug}/members`).then((r) => r.data),
   setModerator: (slug, payload) => api.put(`/communities/${slug}/moderators`, payload).then((r) => r.data),
+  uploadBanner: (slug, file) => {
+    const form = new FormData();
+    form.append('banner', file);
+    return api.post(`/communities/${slug}/banner`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data);
+  },
 };

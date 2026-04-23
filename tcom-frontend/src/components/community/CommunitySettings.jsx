@@ -11,6 +11,7 @@ export function CommunitySettings({ community }) {
     visibility: community?.visibility || 'public',
   });
   const [saving, setSaving] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
 
   if (!community) {
     return (
@@ -32,9 +33,49 @@ export function CommunitySettings({ community }) {
     }
   }
 
+  async function onBannerPick(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type?.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    setUploadingBanner(true);
+    try {
+      await communityApi.uploadBanner(community.slug, file);
+      await qc.invalidateQueries({ queryKey: ['community', community.slug] });
+      await qc.invalidateQueries({ queryKey: ['communities'] });
+      toast.success('Banner updated');
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Could not upload banner');
+    } finally {
+      setUploadingBanner(false);
+    }
+  }
+
   return (
     <form className="card grid fade-in" onSubmit={onSubmit}>
       <h2 style={{ margin: 0 }}>Community settings</h2>
+      <div className="settings-banner-block">
+        <span className="muted">Community banner</span>
+        <div className="settings-banner-preview">
+          {community.banner_url ? (
+            <img src={community.banner_url} alt={`${community.name} banner`} />
+          ) : (
+            <div className="settings-banner-fallback muted">No banner uploaded yet</div>
+          )}
+        </div>
+        <label className="btn-ghost media-upload-btn">
+          {uploadingBanner ? 'Uploading…' : 'Upload banner'}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={onBannerPick}
+            disabled={uploadingBanner}
+          />
+        </label>
+      </div>
       <label>
         <span className="muted">Name</span>
         <input

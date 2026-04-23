@@ -11,7 +11,6 @@ const MAX = 500;
 
 export function PostComposer({ communitySlug, placeholder = 'Share alpha with the community…' }) {
   const [content, setContent] = useState('');
-  const [gifUrl, setGifUrl] = useState('');
   const [mediaUrls, setMediaUrls] = useState([]);
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
@@ -21,7 +20,6 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
     onSuccess: () => {
       setContent('');
       setMediaUrls([]);
-      setGifUrl('');
       qc.invalidateQueries({ queryKey: ['posts', communitySlug] });
       qc.invalidateQueries({ queryKey: ['community', communitySlug] });
       toast.success('Posted');
@@ -35,7 +33,7 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
       setMediaUrls((prev) => [...prev, url].slice(0, 4));
       toast.success('Image added');
     },
-    onError: (err) => toast.error(err?.response?.data?.error || 'Could not upload image'),
+    onError: (err) => toast.error(err?.message || err?.response?.data?.error || 'Could not upload image'),
   });
 
   if (!user) {
@@ -56,20 +54,6 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !disabled) {
       mutation.mutate();
     }
-  }
-
-  function addGifUrl() {
-    const url = gifUrl.trim();
-    if (!url) return;
-    if (!/^https?:\/\//i.test(url)) {
-      toast.error('Enter a valid GIF URL');
-      return;
-    }
-    setMediaUrls((prev) => {
-      if (prev.length >= 4) return prev;
-      return [...prev, url];
-    });
-    setGifUrl('');
   }
 
   async function onPickFiles(e) {
@@ -99,18 +83,6 @@ export function PostComposer({ communitySlug, placeholder = 'Share alpha with th
             Upload photo
             <input type="file" accept="image/*" multiple onChange={onPickFiles} disabled={uploadMutation.isPending || mediaUrls.length >= 4} />
           </label>
-          <div className="gif-input-wrap">
-            <input
-              className="input"
-              placeholder="Paste Giphy GIF URL"
-              value={gifUrl}
-              onChange={(e) => setGifUrl(e.target.value)}
-              disabled={mediaUrls.length >= 4}
-            />
-            <button type="button" className="btn-ghost" onClick={addGifUrl} disabled={mediaUrls.length >= 4 || !gifUrl.trim()}>
-              Add GIF
-            </button>
-          </div>
         </div>
         {mediaUrls.length > 0 && (
           <div className="media-preview-grid">

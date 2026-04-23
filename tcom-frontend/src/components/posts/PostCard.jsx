@@ -10,6 +10,7 @@ import { ReplyThread } from './ReplyThread';
 import { IconReply, IconTrash, IconEye } from '../ui/Icon';
 import { useAuthStore } from '../../store/authStore';
 import { UserXLink } from '../profile/UserXLink';
+import { PostBody } from './PostBody';
 
 dayjs.extend(relativeTime);
 
@@ -130,7 +131,7 @@ export function PostCard({ post, communitySlug, canPin = false, canModerate = fa
             {dayjs(post.created_at).fromNow()}
           </time>
         </header>
-        <p className="post-content">{post.content}</p>
+        <PostBody text={post.content} />
         <PostMedia urls={post.media_urls} />
         <div className="post-actions">
           <button

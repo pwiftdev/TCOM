@@ -138,7 +138,6 @@ export function CommunitySettings({ community }) {
           >
             <option value="public">Public</option>
             <option value="private">Private</option>
-            <option value="invite">Invite only</option>
           </select>
         </label>
         <div>

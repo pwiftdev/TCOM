@@ -11,7 +11,6 @@ const CA_PLACEHOLDER = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrpump';
 const VISIBILITY_OPTIONS = [
   { id: 'public', title: 'Public', desc: 'Anyone can view and join. Recommended for open alpha.' },
   { id: 'private', title: 'Private', desc: 'Only members see posts. Great for tighter crews.' },
-  { id: 'invite', title: 'Invite only', desc: 'Members join via invite link. Most exclusive.' },
 ];
 
 function slugify(name) {

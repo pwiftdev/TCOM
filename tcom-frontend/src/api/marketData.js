@@ -64,14 +64,59 @@ export async function fetchMarketCaps(addresses) {
         ? best.fdv
         : null;
     const priceUsd = best.priceUsd ? Number(best.priceUsd) : null;
+    const fdv = typeof best.fdv === 'number' ? best.fdv : null;
+    const liquidityUsd = typeof best?.liquidity?.usd === 'number' ? best.liquidity.usd : null;
+    const volume24h = typeof best?.volume?.h24 === 'number' ? best.volume.h24 : null;
+    const priceChange24h = typeof best?.priceChange?.h24 === 'number' ? best.priceChange.h24 : null;
+    const priceChange1h = typeof best?.priceChange?.h1 === 'number' ? best.priceChange.h1 : null;
+    const txns24h = best?.txns?.h24 || null;
+    const imageUrl = best?.info?.imageUrl || null;
+    const socials = best?.info?.socials || [];
+    const websites = best?.info?.websites || [];
     result[key] = {
       marketCap,
+      fdv,
       priceUsd: Number.isFinite(priceUsd) ? priceUsd : null,
+      priceChange24h,
+      priceChange1h,
+      volume24h,
+      liquidityUsd,
+      txns24h,
       symbol: best?.baseToken?.symbol || null,
+      name: best?.baseToken?.name || null,
+      imageUrl,
       pairUrl: best.url || null,
+      dexId: best.dexId || null,
+      chainId: best.chainId || 'solana',
+      pairAddress: best.pairAddress || null,
+      socials,
+      websites,
     };
   }
   return result;
+}
+
+export function formatPrice(value) {
+  if (value == null || !Number.isFinite(value) || value <= 0) return '?';
+  if (value >= 1) return `$${value.toFixed(3)}`;
+  if (value >= 0.01) return `$${value.toFixed(4)}`;
+  if (value >= 0.0001) return `$${value.toFixed(6)}`;
+  // For very small prices use a compact subscript style so it doesn't blow up the UI
+  return `$${value.toExponential(2)}`;
+}
+
+export function formatUsdCompact(value) {
+  if (value == null || !Number.isFinite(value) || value <= 0) return '?';
+  if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`;
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`;
+  return `$${Math.round(value)}`;
+}
+
+export function formatPercent(value) {
+  if (value == null || !Number.isFinite(value)) return '?';
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${value.toFixed(2)}%`;
 }
 
 /**

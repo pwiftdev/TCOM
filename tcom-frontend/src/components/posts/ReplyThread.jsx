@@ -7,6 +7,7 @@ import { postApi } from '../../api/posts';
 import { Avatar } from '../ui/Avatar';
 import { useAuthStore } from '../../store/authStore';
 import { UserXLink } from '../profile/UserXLink';
+import { PostContent } from './PostContent';
 
 dayjs.extend(relativeTime);
 
@@ -58,7 +59,7 @@ export function ReplyThread({ postId, communitySlug }) {
               <span className="dot">·</span>
               <time>{dayjs(reply.created_at).fromNow()}</time>
             </header>
-            <p className="post-content">{reply.content}</p>
+            <PostContent text={reply.content} />
             {Array.isArray(reply.media_urls) && reply.media_urls.length > 0 && (
               <div className="post-media-grid media-count-2" style={{ marginTop: '0.45rem' }}>
                 {reply.media_urls.slice(0, 2).map((url) => (

@@ -25,7 +25,7 @@ create table if not exists communities (
   banner_url text,
   icon_url text,
   owner_id uuid references users(id) on delete set null,
-  visibility text default 'public' check (visibility in ('public','private','invite')),
+  visibility text default 'public' check (visibility in ('public','private')),
   member_count int default 0,
   post_count int default 0,
   tags text[] default '{}',
@@ -65,14 +65,38 @@ create table if not exists post_likes (
   unique(post_id, user_id)
 );
 
-create table if not exists community_invites (
-  id uuid primary key default gen_random_uuid(),
-  community_id uuid references communities(id) on delete cascade,
-  created_by uuid references users(id) on delete set null,
-  max_uses int,
-  use_count int default 0,
-  expires_at timestamptz
-);
+-- Invite-only communities feature removed
+drop table if exists community_invites;
+
+-- Migrate any existing 'invite' communities to 'private' before re-tightening the check
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_name = 'communities' and column_name = 'visibility'
+  ) then
+    update communities set visibility = 'private' where visibility = 'invite';
+  end if;
+end
+$$;
+
+do $$
+declare
+  cname text;
+begin
+  for cname in
+    select conname from pg_constraint
+    where conrelid = 'communities'::regclass
+      and contype = 'c'
+      and pg_get_constraintdef(oid) ilike '%visibility%'
+  loop
+    execute format('alter table communities drop constraint %I', cname);
+  end loop;
+end
+$$;
+alter table communities
+  add constraint communities_visibility_check
+  check (visibility in ('public','private'));
 
 create table if not exists community_bans (
   id uuid primary key default gen_random_uuid(),

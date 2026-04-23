@@ -16,7 +16,7 @@ const schema = z.object({
   description: z.string().max(5000).optional().default(''),
   contract_address: z.string().max(140).optional().nullable(),
   pump_fun_link: z.string().max(300).optional().nullable(),
-  visibility: z.enum(['public', 'private', 'invite']).default('public'),
+  visibility: z.enum(['public', 'private']).default('public'),
   tags: z.array(z.string()).optional().default([]),
 });
 

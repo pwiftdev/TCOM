@@ -7,7 +7,6 @@ import Community from './pages/Community';
 import CreateCommunity from './pages/CreateCommunity';
 import Profile from './pages/Profile';
 import AuthCallback from './pages/AuthCallback';
-import InviteAccept from './pages/InviteAccept';
 import { AuthGuard } from './components/auth/AuthGuard';
 import { useCommunity } from './hooks/useCommunity';
 import { CommunitySettings } from './components/community/CommunitySettings';
@@ -208,7 +207,6 @@ export default function App() {
             />
             <Route path="/profile/:username" element={<Profile />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/invite/:token" element={<InviteAccept />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AppShell>

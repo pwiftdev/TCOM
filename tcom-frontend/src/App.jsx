@@ -1,4 +1,4 @@
-import { BrowserRouter, Link, Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
@@ -12,13 +12,27 @@ import { useCommunity } from './hooks/useCommunity';
 import { CommunitySettings } from './components/community/CommunitySettings';
 import { useAuthBootstrap } from './hooks/useAuth';
 import { useAuthStore } from './store/authStore';
+import { Avatar } from './components/ui/Avatar';
+import { LoginWithX } from './components/auth/LoginWithX';
 
-const qc = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
+      retry: 1,
+    },
+  },
+});
 
 function CommunitySettingsPage() {
   const { slug } = useParams();
   const { data } = useCommunity(slug);
-  return <div className="container"><CommunitySettings community={data} /></div>;
+  return (
+    <div className="container" style={{ maxWidth: 620 }}>
+      <CommunitySettings community={data} />
+    </div>
+  );
 }
 
 function Bootstrap() {
@@ -28,29 +42,34 @@ function Bootstrap() {
 
 function AppShell({ children }) {
   const user = useAuthStore((s) => s.user);
+  const token = useAuthStore((s) => s.token);
   const logout = useAuthStore((s) => s.logout);
+  const hydrating = Boolean(token) && !user;
 
   return (
     <>
       <header className="topbar">
-        <div className="container topbar-inner">
-          <div className="topbar-brand">
-            <Link to="/">TCOM</Link>
-            <span className="muted">Trenches Community</span>
-          </div>
+        <div className="topbar-inner">
+          <Link to="/" className="topbar-brand">
+            <span className="logo">TC</span>
+            TCOM
+          </Link>
           <nav className="topbar-nav">
-            <Link to="/">Explore</Link>
-            {user && <Link to="/create">Create</Link>}
-            {user && <Link to={`/profile/${user.username}`}>Profile</Link>}
+            <NavLink to="/" end>Explore</NavLink>
+            {user && <NavLink to="/create">Create</NavLink>}
+            {user && <NavLink to={`/profile/${user.username}`}>Profile</NavLink>}
           </nav>
           <div className="topbar-user">
             {user ? (
               <>
-                <span className="muted">@{user.username}</span>
-                <button type="button" className="btn btn-ghost" onClick={logout}>Logout</button>
+                <Avatar size="xs" src={user.avatar_url} name={user.username} />
+                <span className="user-name">@{user.username}</span>
+                <button type="button" className="btn-ghost" onClick={logout}>Logout</button>
               </>
+            ) : hydrating ? (
+              <span className="spinner" />
             ) : (
-              <span className="muted">Guest</span>
+              <LoginWithX />
             )}
           </div>
         </div>
@@ -62,15 +81,29 @@ function AppShell({ children }) {
 
 export default function App() {
   return (
-    <QueryClientProvider client={qc}>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <Bootstrap />
         <AppShell>
-          <Bootstrap />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/c/:slug" element={<Community />} />
-            <Route path="/c/:slug/settings" element={<AuthGuard><CommunitySettingsPage /></AuthGuard>} />
-            <Route path="/create" element={<AuthGuard><CreateCommunity /></AuthGuard>} />
+            <Route
+              path="/c/:slug/settings"
+              element={
+                <AuthGuard>
+                  <CommunitySettingsPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/create"
+              element={
+                <AuthGuard>
+                  <CreateCommunity />
+                </AuthGuard>
+              }
+            />
             <Route path="/profile/:username" element={<Profile />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/invite/:token" element={<InviteAccept />} />
@@ -78,7 +111,18 @@ export default function App() {
           </Routes>
         </AppShell>
       </BrowserRouter>
-      <Toaster position="bottom-right" />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: '#111418',
+            color: '#e8edf2',
+            border: '1px solid #1e2630',
+            borderRadius: 10,
+            fontSize: '0.92rem',
+          },
+        }}
+      />
     </QueryClientProvider>
   );
 }

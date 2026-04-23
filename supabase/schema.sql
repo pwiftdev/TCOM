@@ -80,6 +80,12 @@ $$;
 create or replace function increment_reply_count(post_uuid uuid) returns void language sql as $$
   update posts set reply_count = reply_count + 1 where id = post_uuid;
 $$;
+create or replace function decrement_reply_count(post_uuid uuid) returns void language sql as $$
+  update posts set reply_count = greatest(0, reply_count - 1) where id = post_uuid;
+$$;
+create or replace function decrement_post_count(community_slug text) returns void language sql as $$
+  update communities set post_count = greatest(0, post_count - 1) where slug = community_slug;
+$$;
 create or replace function increment_member_count(community_slug text) returns void language sql as $$
   update communities set member_count = member_count + 1 where slug = community_slug;
 $$;

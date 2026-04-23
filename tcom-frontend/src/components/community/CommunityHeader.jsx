@@ -81,20 +81,13 @@ export function CommunityHeader({ community }) {
         </div>
 
         <div className="community-hero-body">
-          <div className="community-hero-identity">
-            <div className="community-hero-icon">
-              <Avatar size="lg" src={community.icon_url} name={community.name} />
-            </div>
-            <div className="community-hero-identity-text">
-              <div className="community-hero-titlerow">
-                <h1>{community.name}</h1>
-                <span className={`pill visibility-pill ${community.visibility}`}>{community.visibility}</span>
-              </div>
-              {community.description && (
-                <p className="community-hero-desc">{community.description}</p>
-              )}
-            </div>
+          <div className="community-hero-titlerow">
+            <h1>{community.name}</h1>
+            <span className={`pill visibility-pill ${community.visibility}`}>{community.visibility}</span>
           </div>
+          {community.description && (
+            <p className="community-hero-desc">{community.description}</p>
+          )}
 
           {(community.contract_address || community.pump_fun_link) && (
             <div className="community-token-meta">

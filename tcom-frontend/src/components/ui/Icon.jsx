@@ -99,3 +99,39 @@ export const IconSparkles = (p) => (
     <path d="M19 14l.95 2.05L22 17l-2.05.95L19 20l-.95-2.05L16 17l2.05-.95z" />
   </svg>
 );
+
+export const IconMoreVertical = (p) => (
+  <svg {...strokeBase} {...p}>
+    <circle cx="12" cy="5" r="1.6" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+    <circle cx="12" cy="19" r="1.6" fill="currentColor" />
+  </svg>
+);
+
+export const IconSearch = (p) => (
+  <svg {...strokeBase} {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
+export const IconShield = (p) => (
+  <svg {...strokeBase} {...p}>
+    <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z" />
+  </svg>
+);
+
+export const IconBan = (p) => (
+  <svg {...strokeBase} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <line x1="5.6" y1="5.6" x2="18.4" y2="18.4" />
+  </svg>
+);
+
+export const IconExternalLink = (p) => (
+  <svg {...strokeBase} {...p}>
+    <path d="M15 3h6v6" />
+    <path d="M10 14L21 3" />
+    <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
+  </svg>
+);

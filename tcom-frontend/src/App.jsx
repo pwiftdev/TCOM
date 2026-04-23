@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import Home from './pages/Home';
 import Community from './pages/Community';
 import CreateCommunity from './pages/CreateCommunity';
@@ -26,6 +26,7 @@ const queryClient = new QueryClient({
     },
   },
 });
+const TCOM_CA = '6oqrBATpFy8ispnR7b2Fc2gUniJ6dj31Z3MXcVHepump';
 
 function CommunitySettingsPage() {
   const { slug } = useParams();
@@ -49,6 +50,7 @@ function AppShell({ children }) {
   const apiBase = import.meta.env.VITE_API_URL;
   const hydrating = Boolean(token) && !user;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [copiedCa, setCopiedCa] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -74,6 +76,17 @@ function AppShell({ children }) {
     logout();
   }
 
+  async function copyCA() {
+    try {
+      await navigator.clipboard.writeText(TCOM_CA);
+      setCopiedCa(true);
+      toast.success('TCOM CA copied');
+      setTimeout(() => setCopiedCa(false), 1400);
+    } catch {
+      toast.error('Could not copy CA');
+    }
+  }
+
   return (
     <>
       <header className="topbar">
@@ -85,17 +98,19 @@ function AppShell({ children }) {
           <nav className="topbar-nav">
             <NavLink to="/" end>Communities</NavLink>
             <a href="/#explore">Explore</a>
-            <a href="/#about">About</a>
             <a href="/#docs">Docs</a>
           </nav>
           <div className="topbar-user">
+            <button type="button" className="topbar-pill topbar-pill-ca" onClick={copyCA}>
+              {copiedCa ? 'Copied CA' : 'Copy CA'}
+            </button>
             {user ? (
               <>
                 <Link className="topbar-pill topbar-pill-ghost" to={`/profile/${user.username}`}>
                   Profile
                 </Link>
                 <Link className="topbar-pill topbar-pill-solid" to="/create">
-                  Join Trenches <span aria-hidden="true">→</span>
+                  Create Community <span aria-hidden="true">→</span>
                 </Link>
               </>
             ) : hydrating ? (

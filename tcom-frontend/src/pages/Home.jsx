@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { communityApi } from '../api/communities';
 import { CommunityCard } from '../components/community/CommunityCard';
 import { LoginWithX } from '../components/auth/LoginWithX';
@@ -13,10 +14,12 @@ const FILTERS = [
   { id: 'trending', label: 'Trending' },
   { id: 'new', label: 'New' },
 ];
+const TCOM_CA = '6oqrBATpFy8ispnR7b2Fc2gUniJ6dj31Z3MXcVHepump';
 
 export default function Home() {
   const user = useAuthStore((s) => s.user);
   const [filter, setFilter] = useState('all');
+  const [copiedTokenCA, setCopiedTokenCA] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['communities'],
@@ -33,6 +36,17 @@ export default function Home() {
     if (!shareUrl) return;
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  async function copyTokenCA() {
+    try {
+      await navigator.clipboard.writeText(TCOM_CA);
+      setCopiedTokenCA(true);
+      toast.success('TCOM contract copied');
+      setTimeout(() => setCopiedTokenCA(false), 1400);
+    } catch {
+      toast.error('Could not copy contract');
+    }
   }
 
   const stats = useMemo(() => {
@@ -205,6 +219,19 @@ export default function Home() {
             <p className="crowd-card-sub">
               No scammers. No hype loops. Just aligned people, building the future, together.
             </p>
+          </div>
+        </div>
+        <div className="tokenomics-card fade-in">
+          <div className="tokenomics-eyebrow">$TCOM TOKENOMICS</div>
+          <h3 className="tokenomics-title">Fair launch on Pump.fun, home of the Solana network.</h3>
+          <p className="tokenomics-sub">
+            95% fair launch, 5% dev buy and lock.
+          </p>
+          <div className="tokenomics-ca-row">
+            <code className="tokenomics-ca" title={TCOM_CA}>{TCOM_CA}</code>
+            <button type="button" className="btn tokenomics-copy-btn" onClick={copyTokenCA}>
+              {copiedTokenCA ? 'Copied' : 'Copy CA'}
+            </button>
           </div>
         </div>
       </section>

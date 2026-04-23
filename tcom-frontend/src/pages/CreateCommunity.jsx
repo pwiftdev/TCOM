@@ -121,7 +121,7 @@ export default function CreateCommunity() {
         <div className="container create-page-hero-inner">
           <div className="eyebrow-label">NEW COMMUNITY</div>
           <h1 className="create-page-title">
-            Launch a <span>home</span> for your tribe.
+            Create a <span>home</span> for your tribe.
           </h1>
           <p className="create-page-sub">
             Set the name, drop the vibe, link your contract. You can always edit this later.

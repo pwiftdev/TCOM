@@ -26,7 +26,7 @@ function PostMedia({ urls }) {
   );
 }
 
-export function PostCard({ post, communitySlug, canPin = false, canModerate = false }) {
+export function PostCard({ post, communitySlug, canPin = false, canModerate = false, listKey }) {
   const [showReplies, setShowReplies] = useState(false);
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
@@ -89,7 +89,7 @@ export function PostCard({ post, communitySlug, canPin = false, canModerate = fa
             <IconReply width={16} height={16} />
             <span>{replyCount}</span>
           </button>
-          <LikeButton post={post} communitySlug={communitySlug} />
+          <LikeButton post={post} communitySlug={communitySlug} listKey={listKey} />
           {canPin && (
             <button
               type="button"

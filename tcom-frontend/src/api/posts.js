@@ -32,7 +32,8 @@ async function uploadMediaToSupabase(file) {
 }
 
 export const postApi = {
-  listByCommunity: (slug) => api.get(`/posts/community/${slug}`).then((r) => r.data),
+  listByCommunity: (slug, { sort = 'latest' } = {}) =>
+    api.get(`/posts/community/${slug}`, { params: { sort } }).then((r) => r.data),
   createInCommunity: (slug, payload) => api.post(`/posts/community/${slug}`, payload).then((r) => r.data),
   get: (id) => api.get(`/posts/${id}`).then((r) => r.data),
   reply: (id, payload) => api.post(`/posts/${id}/reply`, payload).then((r) => r.data),

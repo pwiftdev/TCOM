@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { communityApi } from '../api/communities';
@@ -7,9 +8,15 @@ import { PostComposer } from '../components/posts/PostComposer';
 import { PostCard } from '../components/posts/PostCard';
 import { useAuthStore } from '../store/authStore';
 
+const SORT_OPTIONS = [
+  { id: 'latest', label: 'Latest' },
+  { id: 'trending', label: 'Trending' },
+];
+
 export default function Community() {
   const { slug } = useParams();
   const user = useAuthStore((s) => s.user);
+  const [sort, setSort] = useState('latest');
 
   const { data: community, isLoading: loadingCommunity, isError: communityErr } = useQuery({
     queryKey: ['community', slug],
@@ -17,9 +24,10 @@ export default function Community() {
     staleTime: 30_000,
   });
 
-  const { data: posts, isLoading: loadingPosts } = useQuery({
-    queryKey: ['posts', slug],
-    queryFn: () => postApi.listByCommunity(slug),
+  const postsKey = ['posts', slug, sort];
+  const { data: posts, isLoading: loadingPosts, isFetching: fetchingPosts } = useQuery({
+    queryKey: postsKey,
+    queryFn: () => postApi.listByCommunity(slug, { sort }),
     refetchInterval: 15_000,
     refetchIntervalInBackground: false,
   });
@@ -47,6 +55,29 @@ export default function Community() {
         <>
           <PostComposer communitySlug={slug} />
 
+          <div className="feed-sort">
+            <div className="feed-sort-tabs" role="tablist" aria-label="Sort posts">
+              {SORT_OPTIONS.map((opt) => {
+                const active = sort === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    className={`feed-sort-tab ${active ? 'active' : ''}`}
+                    onClick={() => setSort(opt.id)}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+            {fetchingPosts && !loadingPosts && (
+              <span className="muted feed-sort-status"><span className="spinner" /> Updating…</span>
+            )}
+          </div>
+
           {loadingPosts && (
             <div className="card muted">
               <span className="spinner" /> Loading posts…
@@ -63,7 +94,14 @@ export default function Community() {
           {postList.length > 0 && (
             <div className="grid">
               {postList.map((p) => (
-                <PostCard key={p.id} post={p} communitySlug={slug} canPin={canPin} canModerate={canModerate} />
+                <PostCard
+                  key={p.id}
+                  post={p}
+                  communitySlug={slug}
+                  canPin={canPin}
+                  canModerate={canModerate}
+                  listKey={postsKey}
+                />
               ))}
             </div>
           )}

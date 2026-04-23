@@ -43,14 +43,23 @@ async function attachAuthorRoles(posts, communityId) {
 router.get('/community/:slug', optionalAuth, async (req, res) => {
   const { data: community } = await supabase.from('communities').select('id').eq('slug', req.params.slug).single();
   if (!community) return res.status(404).json({ error: 'Community not found' });
-  const { data, error } = await supabase
+
+  const sort = req.query.sort === 'trending' ? 'trending' : 'latest';
+
+  let query = supabase
     .from('posts')
     .select('*, users:author_id(username,display_name,avatar_url)')
     .eq('community_id', community.id)
     .is('parent_post_id', null)
-    .order('is_pinned', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(30);
+    .order('is_pinned', { ascending: false });
+
+  if (sort === 'trending') {
+    query = query.order('like_count', { ascending: false }).order('created_at', { ascending: false });
+  } else {
+    query = query.order('created_at', { ascending: false });
+  }
+
+  const { data, error } = await query.limit(30);
   if (error) return res.status(400).json({ error: error.message });
   await attachAuthorRoles(data, community.id);
   await attachLikedByMe(data, req.user?.id);

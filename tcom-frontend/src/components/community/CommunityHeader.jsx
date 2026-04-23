@@ -41,7 +41,7 @@ export function CommunityHeader({ community }) {
 
   const memberCount = community.member_count ?? 0;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/c/${community.slug}` : '';
-  const shareText = `Join ${community.name} on TCOM. Trenches never die.`;
+  const shareText = `Join "${community.name}" Community on TCOM, group up trenchers, let's bagwork!`;
 
   function shareOnX() {
     if (!shareUrl) return;

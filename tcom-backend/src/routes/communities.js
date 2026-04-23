@@ -155,15 +155,31 @@ router.put('/:slug/moderators', authenticate, requireOwner, async (req, res) => 
 
 router.post('/:slug/banner', authenticate, requireOwner, upload.single('banner'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Missing banner file' });
-  const banner_url = await uploadImage({ buffer: req.file.buffer, bucket: 'community-banners', path: `${req.params.slug}/banner.webp`, width: 1500, height: 500 });
-  await supabase.from('communities').update({ banner_url }).eq('slug', req.params.slug);
+  const rawUrl = await uploadImage({
+    buffer: req.file.buffer,
+    bucket: 'community-banners',
+    path: `${req.params.slug}/banner.webp`,
+    width: 1500,
+    height: 500,
+  });
+  const banner_url = `${rawUrl}?v=${Date.now()}`;
+  const { error } = await supabase.from('communities').update({ banner_url }).eq('slug', req.params.slug);
+  if (error) return res.status(400).json({ error: error.message });
   return res.json({ banner_url });
 });
 
 router.post('/:slug/icon', authenticate, requireOwner, upload.single('icon'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Missing icon file' });
-  const icon_url = await uploadImage({ buffer: req.file.buffer, bucket: 'community-icons', path: `${req.params.slug}/icon.webp`, width: 400, height: 400 });
-  await supabase.from('communities').update({ icon_url }).eq('slug', req.params.slug);
+  const rawUrl = await uploadImage({
+    buffer: req.file.buffer,
+    bucket: 'community-icons',
+    path: `${req.params.slug}/icon.webp`,
+    width: 400,
+    height: 400,
+  });
+  const icon_url = `${rawUrl}?v=${Date.now()}`;
+  const { error } = await supabase.from('communities').update({ icon_url }).eq('slug', req.params.slug);
+  if (error) return res.status(400).json({ error: error.message });
   return res.json({ icon_url });
 });
 

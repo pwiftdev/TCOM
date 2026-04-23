@@ -157,3 +157,34 @@ begin
   end if;
 end
 $$;
+
+-- Storage buckets for community assets (backend uploads)
+insert into storage.buckets (id, name, public)
+values
+  ('community-banners', 'community-banners', true),
+  ('community-icons', 'community-icons', true)
+on conflict (id) do update set public = excluded.public;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects' and policyname = 'community_banners_public_read'
+  ) then
+    create policy community_banners_public_read
+      on storage.objects
+      for select
+      using (bucket_id = 'community-banners');
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects' and policyname = 'community_icons_public_read'
+  ) then
+    create policy community_icons_public_read
+      on storage.objects
+      for select
+      using (bucket_id = 'community-icons');
+  end if;
+end
+$$;

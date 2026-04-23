@@ -45,8 +45,12 @@ router.get('/community/:slug', optionalAuth, async (req, res) => {
 router.post('/community/:slug', authenticate, async (req, res) => {
   const parsed = z
     .object({
-      content: z.string().min(1).max(500),
+      content: z.string().max(500).optional().default(''),
       media_urls: z.array(z.string().url()).max(4).optional().default([]),
+    })
+    .refine((data) => data.content.trim().length > 0 || data.media_urls.length > 0, {
+      message: 'Post must include text or media',
+      path: ['content'],
     })
     .safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
@@ -54,7 +58,12 @@ router.post('/community/:slug', authenticate, async (req, res) => {
   if (!community) return res.status(404).json({ error: 'Community not found' });
   const { data, error } = await supabase
     .from('posts')
-    .insert({ ...parsed.data, community_id: community.id, author_id: req.user.id })
+    .insert({
+      ...parsed.data,
+      content: parsed.data.content.trim(),
+      community_id: community.id,
+      author_id: req.user.id,
+    })
     .select('*, users:author_id(username,display_name,avatar_url)')
     .single();
   if (error) return res.status(400).json({ error: error.message });

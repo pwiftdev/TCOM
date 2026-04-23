@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { communityApi } from '../api/communities';
 import { CommunityCard } from '../components/community/CommunityCard';
-import { IconPlus, IconSparkles } from '../components/ui/Icon';
+import { IconImage, IconPlus, IconSparkles, IconTrash } from '../components/ui/Icon';
 import { useAuthStore } from '../store/authStore';
+
+const CA_PLACEHOLDER = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrpump';
 
 const VISIBILITY_OPTIONS = [
   { id: 'public', title: 'Public', desc: 'Anyone can view and join. Recommended for open alpha.' },
@@ -33,9 +35,41 @@ export default function CreateCommunity() {
     tags: [],
   });
   const [saving, setSaving] = useState(false);
+  const [bannerFile, setBannerFile] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(null);
+  const bannerInputRef = useRef(null);
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  useEffect(() => {
+    if (!bannerFile) {
+      setBannerPreview(null);
+      return undefined;
+    }
+    const url = URL.createObjectURL(bannerFile);
+    setBannerPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [bannerFile]);
+
+  function onPickBanner(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Banner must be an image');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Banner must be under 5MB');
+      return;
+    }
+    setBannerFile(file);
+  }
+
+  function clearBanner() {
+    setBannerFile(null);
+    if (bannerInputRef.current) bannerInputRef.current.value = '';
   }
 
   const slug = useMemo(() => slugify(form.name), [form.name]);
@@ -46,12 +80,12 @@ export default function CreateCommunity() {
     name: form.name || 'Your community',
     description: form.description || 'Describe your community to give it life.',
     visibility: form.visibility,
-    banner_url: null,
+    banner_url: bannerPreview,
     contract_address: form.contract_address || null,
     pump_fun_link: form.pump_fun_link || null,
     member_count: 1,
     post_count: 0,
-  }), [form, slug]);
+  }), [form, slug, bannerPreview]);
 
   const canSubmit = form.name.trim().length >= 2 && !saving;
   const descRemaining = 500 - form.description.length;
@@ -66,6 +100,13 @@ export default function CreateCommunity() {
     setSaving(true);
     try {
       const created = await communityApi.create({ ...form, name: form.name.trim() });
+      if (bannerFile) {
+        try {
+          await communityApi.uploadBanner(created.slug, bannerFile);
+        } catch (uploadErr) {
+          toast.error(uploadErr?.response?.data?.error || 'Community created, but banner upload failed');
+        }
+      }
       toast.success('Community created');
       navigate(`/c/${created.slug}`);
     } catch (err) {
@@ -99,7 +140,7 @@ export default function CreateCommunity() {
               </div>
               <input
                 className="input"
-                placeholder="e.g. Bitcoin Traders"
+                placeholder="Just a chill community..."
                 value={form.name}
                 onChange={(e) => update('name', e.target.value)}
                 maxLength={60}
@@ -118,7 +159,7 @@ export default function CreateCommunity() {
               </div>
               <textarea
                 rows={4}
-                placeholder="What's your community about? What's the alpha?"
+                placeholder="A chill description for a chill community"
                 value={form.description}
                 onChange={(e) => update('description', e.target.value)}
                 maxLength={500}
@@ -126,7 +167,52 @@ export default function CreateCommunity() {
             </label>
           </Fieldset>
 
-          <Fieldset eyebrow="02" title="Token" desc="Optional — attach your token's contract and pump.fun link.">
+          <Fieldset eyebrow="02" title="Banner" desc="Optional — pick an image that sets the vibe. PNG or JPG, up to 5MB.">
+            <div className="banner-uploader">
+              <input
+                ref={bannerInputRef}
+                type="file"
+                accept="image/*"
+                onChange={onPickBanner}
+                style={{ display: 'none' }}
+                aria-hidden="true"
+                tabIndex={-1}
+              />
+              {bannerPreview ? (
+                <div className="banner-uploader-preview">
+                  <img src={bannerPreview} alt="Banner preview" />
+                  <div className="banner-uploader-preview-actions">
+                    <button
+                      type="button"
+                      className="btn-ghost"
+                      onClick={() => bannerInputRef.current?.click()}
+                    >
+                      <IconImage width={14} height={14} /> Replace
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-ghost btn-danger"
+                      onClick={clearBanner}
+                    >
+                      <IconTrash width={14} height={14} /> Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="banner-uploader-drop"
+                  onClick={() => bannerInputRef.current?.click()}
+                >
+                  <IconImage width={22} height={22} />
+                  <strong>Upload banner</strong>
+                  <span className="muted">16:7 recommended · max 5MB</span>
+                </button>
+              )}
+            </div>
+          </Fieldset>
+
+          <Fieldset eyebrow="03" title="Token" desc="Optional — attach your token's contract and pump.fun link.">
             <label className="field">
               <div className="field-head">
                 <span>Contract address</span>
@@ -134,7 +220,7 @@ export default function CreateCommunity() {
               </div>
               <input
                 className="input mono"
-                placeholder="0x… or Solana address"
+                placeholder={CA_PLACEHOLDER}
                 value={form.contract_address}
                 onChange={(e) => update('contract_address', e.target.value)}
                 maxLength={140}
@@ -155,7 +241,7 @@ export default function CreateCommunity() {
             </label>
           </Fieldset>
 
-          <Fieldset eyebrow="03" title="Privacy" desc="Who can view and join your community.">
+          <Fieldset eyebrow="04" title="Privacy" desc="Who can view and join your community.">
             <div className="radio-cards">
               {VISIBILITY_OPTIONS.map((opt) => {
                 const selected = form.visibility === opt.id;

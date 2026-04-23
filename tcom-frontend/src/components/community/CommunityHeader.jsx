@@ -9,6 +9,8 @@ import { IconUsers, IconSettings, IconX } from '../ui/Icon';
 import { MembersDialog } from './MembersDialog';
 import { LoginWithX } from '../auth/LoginWithX';
 import { UserXLink } from '../profile/UserXLink';
+import { useMarketCaps } from '../../hooks/useMarketCaps';
+import { formatMarketCap } from '../../api/marketData';
 
 function shortAddress(addr) {
   if (!addr) return '';
@@ -24,6 +26,13 @@ export function CommunityHeader({ community }) {
 
   const isOwner = user && community.owner_id === user.id;
   const isMember = !!community.is_member;
+
+  const ca = community.contract_address;
+  const { byAddress: mcapByAddress } = useMarketCaps(ca ? [ca] : []);
+  const mcapEntry = ca ? mcapByAddress(ca) : undefined;
+  const mcapLabel = ca
+    ? (mcapEntry && mcapEntry.marketCap != null ? formatMarketCap(mcapEntry.marketCap) : '?')
+    : null;
 
   const join = useMutation({
     mutationFn: () => communityApi.join(community.slug),
@@ -102,6 +111,15 @@ export function CommunityHeader({ community }) {
                   <span className="token-chip-value">{shortAddress(community.contract_address)}</span>
                   <span className="token-chip-action">{copied ? 'Copied' : 'Copy'}</span>
                 </button>
+              )}
+              {community.contract_address && (
+                <span
+                  className={`token-chip token-mcap ${mcapLabel === '?' ? 'token-mcap-empty' : ''}`}
+                  title={mcapLabel === '?' ? 'Market cap unavailable' : `Market cap · ${mcapLabel}`}
+                >
+                  <span className="token-chip-label">MCAP</span>
+                  <span className="token-chip-value">{mcapLabel}</span>
+                </span>
               )}
               {community.pump_fun_link && (
                 <a

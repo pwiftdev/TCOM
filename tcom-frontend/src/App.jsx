@@ -1,4 +1,5 @@
-import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
@@ -15,6 +16,7 @@ import { useAuthStore } from './store/authStore';
 import { Avatar } from './components/ui/Avatar';
 import { LoginWithX } from './components/auth/LoginWithX';
 import { OnlineIndicator } from './components/ui/OnlineIndicator';
+import { IconMenu, IconClose } from './components/ui/Icon';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +48,31 @@ function AppShell({ children }) {
   const token = useAuthStore((s) => s.token);
   const logout = useAuthStore((s) => s.logout);
   const hydrating = Boolean(token) && !user;
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [mobileOpen]);
+
+  function handleLogout() {
+    setMobileOpen(false);
+    logout();
+  }
 
   return (
     <>
@@ -54,13 +81,13 @@ function AppShell({ children }) {
           <Link to="/" className="topbar-brand">
             <img
               src="/tcomlogo.jpeg"
-              alt="TCOM logo"
+              alt="TrenchCom logo"
               className="logo"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
             />
-            <span>TCOM</span>
+            <span>TrenchCom</span>
           </Link>
           <nav className="topbar-nav">
             <NavLink to="/" end>Explore</NavLink>
@@ -81,8 +108,74 @@ function AppShell({ children }) {
               <LoginWithX />
             )}
           </div>
+          <button
+            type="button"
+            className="topbar-menu-btn"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-drawer"
+          >
+            {mobileOpen ? <IconClose width={22} height={22} /> : <IconMenu width={22} height={22} />}
+          </button>
         </div>
       </header>
+
+      <div
+        className={`mobile-nav-backdrop ${mobileOpen ? 'open' : ''}`}
+        onClick={() => setMobileOpen(false)}
+        aria-hidden={!mobileOpen}
+      />
+      <aside
+        id="mobile-nav-drawer"
+        className={`mobile-nav ${mobileOpen ? 'open' : ''}`}
+        aria-hidden={!mobileOpen}
+      >
+        <div className="mobile-nav-header">
+          <div className="mobile-nav-brand">
+            <img src="/tcomlogo.jpeg" alt="" className="logo" />
+            <span>TrenchCom</span>
+          </div>
+          <OnlineIndicator />
+        </div>
+
+        {user ? (
+          <Link
+            to={`/profile/${user.username}`}
+            className="mobile-nav-user"
+            onClick={() => setMobileOpen(false)}
+          >
+            <Avatar size="sm" src={user.avatar_url} name={user.username} />
+            <div className="mobile-nav-user-meta">
+              <strong>{user.display_name || user.username}</strong>
+              <span className="muted">@{user.username}</span>
+            </div>
+          </Link>
+        ) : hydrating ? (
+          <div className="mobile-nav-user muted"><span className="spinner" /> Signing in…</div>
+        ) : (
+          <div className="mobile-nav-signin">
+            <LoginWithX />
+          </div>
+        )}
+
+        <nav className="mobile-nav-links">
+          <NavLink to="/" end onClick={() => setMobileOpen(false)}>Explore</NavLink>
+          {user && <NavLink to="/create" onClick={() => setMobileOpen(false)}>Create community</NavLink>}
+          {user && (
+            <NavLink to={`/profile/${user.username}`} onClick={() => setMobileOpen(false)}>
+              Your profile
+            </NavLink>
+          )}
+        </nav>
+
+        {user && (
+          <div className="mobile-nav-footer">
+            <button type="button" className="btn-ghost" onClick={handleLogout}>Logout</button>
+          </div>
+        )}
+      </aside>
+
       <main>{children}</main>
     </>
   );

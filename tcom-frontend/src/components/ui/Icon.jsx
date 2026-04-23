@@ -128,6 +128,21 @@ export const IconBan = (p) => (
   </svg>
 );
 
+export const IconMenu = (p) => (
+  <svg {...strokeBase} {...p}>
+    <line x1="3" y1="7" x2="21" y2="7" />
+    <line x1="3" y1="12" x2="21" y2="12" />
+    <line x1="3" y1="17" x2="21" y2="17" />
+  </svg>
+);
+
+export const IconClose = (p) => (
+  <svg {...strokeBase} {...p}>
+    <line x1="6" y1="6" x2="18" y2="18" />
+    <line x1="18" y1="6" x2="6" y2="18" />
+  </svg>
+);
+
 export const IconEye = (p) => (
   <svg {...strokeBase} {...p}>
     <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />

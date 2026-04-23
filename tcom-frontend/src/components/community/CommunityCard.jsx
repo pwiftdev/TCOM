@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { IconUsers } from '../ui/Icon';
+import { formatMarketCap } from '../../api/marketData';
 
 function shortAddress(addr) {
   if (!addr) return '';
@@ -7,9 +8,11 @@ function shortAddress(addr) {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 }
 
-export function CommunityCard({ community }) {
+export function CommunityCard({ community, marketCap }) {
   const memberCount = community.member_count ?? 0;
   const postCount = community.post_count ?? 0;
+  const showMcap = Boolean(community.contract_address) && marketCap !== undefined;
+  const mcapLabel = marketCap === null || marketCap === undefined ? '?' : formatMarketCap(marketCap);
 
   return (
     <Link to={`/c/${community.slug}`} className="community-card-v2">
@@ -39,6 +42,15 @@ export function CommunityCard({ community }) {
               <span className="token-chip-label">CA</span>
               <span className="token-chip-value">{shortAddress(community.contract_address)}</span>
             </span>
+            {showMcap && (
+              <span
+                className={`token-chip token-mcap ${mcapLabel === '?' ? 'token-mcap-empty' : ''}`}
+                title={mcapLabel === '?' ? 'Market cap unavailable' : `Market cap · ${mcapLabel}`}
+              >
+                <span className="token-chip-label">MCAP</span>
+                <span className="token-chip-value">{mcapLabel}</span>
+              </span>
+            )}
             {community.pump_fun_link && (
               <span className="token-chip token-link">
                 <span className="token-dot" /> Pump.fun

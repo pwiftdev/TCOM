@@ -6,6 +6,7 @@ import { CommunityCard } from '../components/community/CommunityCard';
 import { LoginWithX } from '../components/auth/LoginWithX';
 import { useAuthStore } from '../store/authStore';
 import { IconPlus, IconX, IconUsers, IconSparkles } from '../components/ui/Icon';
+import { useMarketCaps } from '../hooks/useMarketCaps';
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -39,6 +40,20 @@ export default function Home() {
     const totalPosts = communities.reduce((acc, c) => acc + (c.post_count || 0), 0);
     return { communities: communities.length, members: totalMembers, posts: totalPosts };
   }, [communities]);
+
+  const communityAddresses = useMemo(
+    () => communities.map((c) => c.contract_address).filter(Boolean),
+    [communities],
+  );
+  const { byAddress: mcapByAddress } = useMarketCaps(communityAddresses);
+
+  function mcapForCommunity(c) {
+    if (!c.contract_address) return undefined;
+    const entry = mcapByAddress(c.contract_address);
+    if (entry === undefined) return null; // still loading → show '?'
+    if (entry === null) return null; // no data
+    return entry.marketCap ?? null;
+  }
 
   const filteredCommunities = useMemo(() => {
     const arr = [...communities];
@@ -229,7 +244,7 @@ export default function Home() {
         {filteredCommunities.length > 0 && (
           <div className="explore-grid">
             {filteredCommunities.map((c) => (
-              <CommunityCard key={c.id} community={c} />
+              <CommunityCard key={c.id} community={c} marketCap={mcapForCommunity(c)} />
             ))}
           </div>
         )}

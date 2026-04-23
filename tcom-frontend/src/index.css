@@ -1517,6 +1517,165 @@ label > span:first-child {
   margin-top: 0.4rem;
 }
 
+/* Hero two-column row (copy + circular logo loop) */
+.hero-v2-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.2rem;
+  align-items: center;
+}
+.hero-v2-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  min-width: 0;
+}
+.hero-v2-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 340px;
+}
+@media (min-width: 960px) {
+  .hero-v2-row {
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    gap: 3rem;
+  }
+}
+
+/* Circular logo stage */
+.hero-logo-stage {
+  position: relative;
+  width: min(420px, 92vw);
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+}
+.hero-logo-glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(201, 169, 110, 0.45) 0%, rgba(201, 169, 110, 0.12) 45%, transparent 72%);
+  filter: blur(18px);
+  z-index: 0;
+  animation: heroLogoGlow 6s ease-in-out infinite;
+}
+@keyframes heroLogoGlow {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.05); }
+}
+
+.hero-logo-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 110, 0.18);
+  z-index: 1;
+  pointer-events: none;
+}
+.hero-logo-ring-1 { inset: 18%; border-color: rgba(201, 169, 110, 0.32); border-style: dashed; animation: heroRingSpin 24s linear infinite; }
+.hero-logo-ring-2 { inset: 8%;  border-color: rgba(201, 169, 110, 0.22); animation: heroRingSpin 40s linear infinite reverse; }
+.hero-logo-ring-3 { inset: 0;   border-color: rgba(255, 255, 255, 0.06); }
+@keyframes heroRingSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.hero-logo-orbit {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  animation: heroOrbit linear infinite;
+}
+.hero-logo-orbit-outer { inset: 0;   animation-duration: 18s; }
+.hero-logo-orbit-mid   { inset: 8%;  animation-duration: 14s; animation-direction: reverse; }
+.hero-logo-orbit-inner { inset: 18%; animation-duration: 10s; }
+@keyframes heroOrbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.hero-logo-orbit-dot {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f0ddb8;
+  box-shadow: 0 0 16px rgba(240, 221, 184, 0.9), 0 0 4px rgba(201, 169, 110, 0.8);
+}
+.hero-logo-orbit-mid .hero-logo-orbit-dot   { background: #c9a96e; box-shadow: 0 0 14px rgba(201, 169, 110, 0.9); width: 8px; height: 8px; top: -4px; }
+.hero-logo-orbit-inner .hero-logo-orbit-dot { background: #fff; box-shadow: 0 0 12px rgba(255, 255, 255, 0.7); width: 6px; height: 6px; top: -3px; }
+
+/* Rotating caption that loops around the logo */
+.hero-logo-loop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  animation: heroLoopSpin 28s linear infinite;
+  pointer-events: none;
+}
+.hero-logo-loop-text {
+  font-family: 'Bebas Neue', 'Inter', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.35em;
+  fill: rgba(240, 221, 184, 0.72);
+  text-transform: uppercase;
+}
+@keyframes heroLoopSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* The logo disc in the middle */
+.hero-logo-disc {
+  position: relative;
+  width: 55%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 4;
+  border: 1px solid rgba(201, 169, 110, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4) inset,
+    0 18px 60px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(201, 169, 110, 0.35);
+  background: #0f0e0c;
+  animation: heroLogoFloat 7s ease-in-out infinite;
+}
+.hero-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@keyframes heroLogoFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo-glow,
+  .hero-logo-ring-1,
+  .hero-logo-ring-2,
+  .hero-logo-orbit,
+  .hero-logo-loop,
+  .hero-logo-disc { animation: none; }
+}
+@media (max-width: 640px) {
+  .hero-v2-visual { min-height: 280px; margin-top: 0.5rem; }
+  .hero-logo-stage { width: min(320px, 84vw); }
+  .hero-logo-loop-text { font-size: 11px; letter-spacing: 0.28em; }
+}
+
 /* Stats */
 .hero-v2-stats {
   display: flex;

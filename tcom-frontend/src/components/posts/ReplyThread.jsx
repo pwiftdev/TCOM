@@ -59,6 +59,15 @@ export function ReplyThread({ postId, communitySlug }) {
               <time>{dayjs(reply.created_at).fromNow()}</time>
             </header>
             <p className="post-content">{reply.content}</p>
+            {Array.isArray(reply.media_urls) && reply.media_urls.length > 0 && (
+              <div className="post-media-grid media-count-2" style={{ marginTop: '0.45rem' }}>
+                {reply.media_urls.slice(0, 2).map((url) => (
+                  <a href={url} target="_blank" rel="noreferrer" key={url} className="post-media-item">
+                    <img src={url} alt="" loading="lazy" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </article>
       ))}

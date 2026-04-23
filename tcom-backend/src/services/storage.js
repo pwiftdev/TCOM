@@ -7,4 +7,13 @@ async function uploadImage({ buffer, bucket, path, width, height }) {
   return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
 
-module.exports = { uploadImage };
+async function uploadPostMedia({ buffer, path }) {
+  const resized = await sharp(buffer)
+    .resize(1280, 1280, { fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 86 })
+    .toBuffer();
+  await supabase.storage.from('post-media').upload(path, resized, { upsert: true, contentType: 'image/webp' });
+  return supabase.storage.from('post-media').getPublicUrl(path).data.publicUrl;
+}
+
+module.exports = { uploadImage, uploadPostMedia };

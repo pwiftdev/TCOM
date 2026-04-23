@@ -249,6 +249,10 @@ label > span:first-child {
   background: var(--accent-dim);
   color: var(--accent);
 }
+.pill.pin-pill {
+  background: rgba(201, 169, 110, 0.18);
+  color: #f0ddb8;
+}
 
 /* Animations */
 @keyframes fadeIn {
@@ -503,6 +507,30 @@ label > span:first-child {
   color: var(--text-muted);
   margin-left: -0.55rem;
 }
+.post-media-grid {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.15rem 0 0.65rem 0;
+}
+.post-media-grid.media-count-1 { grid-template-columns: 1fr; }
+.post-media-grid.media-count-2 { grid-template-columns: 1fr 1fr; }
+.post-media-grid.media-count-3,
+.post-media-grid.media-count-4 { grid-template-columns: 1fr 1fr; }
+.post-media-item {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-2);
+  min-height: 120px;
+}
+.post-media-item img {
+  width: 100%;
+  height: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  display: block;
+}
 
 /* Composer */
 .composer {
@@ -524,6 +552,57 @@ label > span:first-child {
   resize: none;
 }
 .composer textarea:focus { background: transparent; }
+.composer-tools {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.45rem;
+}
+.media-upload-btn {
+  width: fit-content;
+  position: relative;
+  overflow: hidden;
+}
+.media-upload-btn input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.gif-input-wrap {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+}
+.gif-input-wrap .input {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.media-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+.media-preview-item {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-2);
+  aspect-ratio: 16 / 10;
+}
+.media-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.media-remove-btn {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  background: rgba(15, 14, 12, 0.76);
+}
 .composer-footer {
   display: flex;
   align-items: center;

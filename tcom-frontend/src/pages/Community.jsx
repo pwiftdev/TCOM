@@ -5,9 +5,11 @@ import { postApi } from '../api/posts';
 import { CommunityHeader } from '../components/community/CommunityHeader';
 import { PostComposer } from '../components/posts/PostComposer';
 import { PostCard } from '../components/posts/PostCard';
+import { useAuthStore } from '../store/authStore';
 
 export default function Community() {
   const { slug } = useParams();
+  const user = useAuthStore((s) => s.user);
 
   const { data: community, isLoading: loadingCommunity, isError: communityErr } = useQuery({
     queryKey: ['community', slug],
@@ -23,6 +25,7 @@ export default function Community() {
   });
 
   const postList = posts || [];
+  const canPin = Boolean(user && community && community.owner_id === user.id);
 
   return (
     <div className="container grid fade-in" style={{ maxWidth: 760 }}>
@@ -59,7 +62,7 @@ export default function Community() {
           {postList.length > 0 && (
             <div className="grid">
               {postList.map((p) => (
-                <PostCard key={p.id} post={p} communitySlug={slug} />
+                <PostCard key={p.id} post={p} communitySlug={slug} canPin={canPin} />
               ))}
             </div>
           )}

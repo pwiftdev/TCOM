@@ -213,8 +213,8 @@ export default function Home() {
       </section>
 
       {/* Footer CTA */}
-      <section className="container">
-        <div className="cta-strip">
+      <footer className="cta-footer">
+        <div className="container cta-footer-inner">
           <div>
             <div className="eyebrow-label">READY?</div>
             <h2>Start your community in under a minute.</h2>
@@ -232,7 +232,10 @@ export default function Home() {
             </button>
           </div>
         </div>
-      </section>
+        <div className="cta-footer-bottom container">
+          <span className="muted">© TCOM · Crypto communities with X-powered identity</span>
+        </div>
+      </footer>
     </div>
   );
 }
